@@ -13,9 +13,9 @@ interface Note {
 }
 
 const INITIAL: Omit<Note, "content">[] = [
-  { id: "intro",     xPct: 24,  yPct: 30,  color: "#43669e", width: 300, zIndex: 4 },
+  { id: "intro",     xPct: 30,  yPct: 30,  color: "#43669e", width: 235, zIndex: 4 },
   { id: "quote",     xPct: 50,  yPct: 30,  color: "#2f812f", width: 320, zIndex: 6 },
-  { id: "education", xPct: 42,  yPct: 42,  color: "#c06408", width: 250, zIndex: 8 },
+  { id: "education", xPct: 44,  yPct: 42,  color: "#c06408", width: 250, zIndex: 8 },
   { id: "red",       xPct: 50,  yPct: 53,  color: "#b02415", width: 200, zIndex: 5 },
 ];
 
@@ -29,12 +29,10 @@ export default function Home() {
         ...INITIAL[0],
         content: (
           <div>
-            <p style={titleStyle}>Hi there! I&apos;m Kris</p>
+            <p style={titleStyle}>Hi! I'm Kris :)</p>
             <p style={bodyStyle}>
-              A designer working in the intersection of art and technology.
-              Shaping design as a continuum rather than a division, I work in
-              the spaces between mediums to create user experiences that feel
-              whole and connected.
+              Working at the intersection of digital and physical culture,
+              I explore technology as a space for creative expression.
             </p>
           </div>
         ),
@@ -51,7 +49,7 @@ export default function Home() {
         ...INITIAL[2],
         content: (
           <p style={{ ...bodyStyle, whiteSpace: "pre-wrap" }}>
-            {`I am currently pursuing a degree in Information Technology at Bicol University.`}
+            {`I am currently pursuing BS Information Technology at Bicol University.`}
           </p>
         ),
       },
