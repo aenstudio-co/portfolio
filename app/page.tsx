@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
+import Link from "next/link"; // Added for navigation
 
 interface Note {
   id: string;
@@ -88,10 +89,18 @@ export default function Home() {
 
         {/* Navbar */}
         <nav style={navStyle}>
-          <a href="#" style={logoStyle}>KRIS</a>
+          <Link href="/" style={logoStyle}>KRIS</Link>
           <div style={{ display: "flex", gap: 40 }}>
-            {["WORK", "LIBRARY", "ABOUT"].map((l) => (
-              <a key={l} href="#" style={navLinkStyle}>{l}</a>
+            {/* Updated navigation array to include Playground */}
+            {[
+              { label: "WORK", href: "/" },
+              { label: "PLAYGROUND", href: "/playground" },
+              { label: "LIBRARY", href: "#" },
+              { label: "ABOUT", href: "#" }
+            ].map((item) => (
+              <Link key={item.label} href={item.href} style={navLinkStyle}>
+                {item.label}
+              </Link>
             ))}
           </div>
         </nav>
@@ -121,8 +130,8 @@ const pageStyle: React.CSSProperties = {
 const dotGridStyle: React.CSSProperties = {
   position: "absolute",
   inset: 0,
-  backgroundImage: "radial-gradient(circle, #A8C8E8 1.3px, transparent 1.3px)",
-  backgroundSize: "26px 26px",
+  backgroundImage: "radial-gradient(circle, #A8C8E8 1px, transparent 1.3px)",
+  backgroundSize: "18px 18px",
   backgroundPosition: "13px 13px",
   zIndex: 0,
   pointerEvents: "none",
@@ -216,8 +225,7 @@ function DraggableNote({
       ref.current.style.top = y + "px";
     }
     setReady(true);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [note.xPct, note.yPct]);
 
   const startDrag = (clientX: number, clientY: number) => {
     dragging.current = true;
