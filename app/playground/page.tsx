@@ -22,36 +22,36 @@ interface CardDef {
 }
 
 const CARDS: CardDef[] = [
-  { id:  1, label: "Project 01", cat: "Product ", w: 370, h: 296, x: 0, y: 0, img: "/work/illustration-3.webp" },
-  { id:  2, label: "Project 02", cat: "Poster  ", w: 360, h: 280, x: 0, y: 0, img: undefined },
-  { id:  3, label: "Project 03", cat: "Branding", w: 400, h: 420, x: 0, y: 0, img: undefined },
-  { id:  4, label: "Project 04", cat: "UI      ", w: 320, h: 440, x: 0, y: 0, img: undefined },
-  { id:  5, label: "Project 05", cat: "Motion  ", w: 380, h: 320, x: 0, y: 0, img: undefined },
-  { id:  6, label: "Project 06", cat: "Product ", w: 300, h: 400, x: 0, y: 0, img: undefined },
-  { id:  7, label: "Project 07", cat: "Poster  ", w: 360, h: 280, x: 0, y: 0, img: undefined },
-  { id:  8, label: "Project 08", cat: "Branding", w: 400, h: 420, x: 0, y: 0, img: undefined },
-  { id:  9, label: "Project 09", cat: "UI      ", w: 320, h: 440, x: 0, y: 0, img: undefined },
-  { id: 10, label: "Project 10", cat: "Motion  ", w: 380, h: 320, x: 0, y: 0, img: undefined },
-  { id: 11, label: "Project 11", cat: "Product ", w: 300, h: 400, x: 0, y: 0, img: undefined },
-  { id: 12, label: "Project 12", cat: "Poster  ", w: 360, h: 280, x: 0, y: 0, img: undefined },
-  { id: 13, label: "Project 13", cat: "Branding", w: 400, h: 420, x: 0, y: 0, img: undefined },
-  { id: 14, label: "Project 14", cat: "UI      ", w: 320, h: 440, x: 0, y: 0, img: undefined },
-  { id: 15, label: "Project 15", cat: "Motion  ", w: 380, h: 320, x: 0, y: 0, img: undefined },
-  { id: 16, label: "Project 16", cat: "Product ", w: 300, h: 400, x: 0, y: 0, img: undefined },
-  { id: 17, label: "Project 17", cat: "Poster  ", w: 360, h: 280, x: 0, y: 0, img: undefined },
-  { id: 18, label: "Project 18", cat: "Branding", w: 400, h: 420, x: 0, y: 0, img: undefined },
-  { id: 19, label: "Project 19", cat: "UI      ", w: 320, h: 440, x: 0, y: 0, img: undefined },
-  { id: 20, label: "Project 20", cat: "Motion  ", w: 380, h: 320, x: 0, y: 0, img: undefined },
-  { id: 21, label: "Project 21", cat: "Product ", w: 300, h: 400, x: 0, y: 0, img: undefined },
-  { id: 22, label: "Project 22", cat: "Poster  ", w: 360, h: 280, x: 0, y: 0, img: undefined },
-  { id: 23, label: "Project 23", cat: "Branding", w: 400, h: 420, x: 0, y: 0, img: undefined },
-  { id: 24, label: "Project 24", cat: "UI      ", w: 320, h: 440, x: 0, y: 0, img: undefined },
-  { id: 25, label: "Project 25", cat: "Motion  ", w: 380, h: 320, x: 0, y: 0, img: undefined },
-  { id: 26, label: "Project 26", cat: "Product ", w: 300, h: 400, x: 0, y: 0, img: undefined },
-  { id: 27, label: "Project 27", cat: "Poster  ", w: 360, h: 280, x: 0, y: 0, img: undefined },
-  { id: 28, label: "Project 28", cat: "Branding", w: 400, h: 420, x: 0, y: 0, img: undefined },
-  { id: 29, label: "Project 29", cat: "UI      ", w: 320, h: 440, x: 0, y: 0, img: undefined },
-  { id: 30, label: "Project 30", cat: "Motion  ", w: 380, h: 320, x: 0, y: 0, img: undefined },
+  { id:  1, label: "Presentation", cat: "Creatives Committee Onboarding Session", w: 360, h: 202, x: -100, y: -100, img: "/work/presentation-1.webp" },
+  { id:  2, label: "Publicity Material", cat: "Battle of the Wits", w: 260, h: 260, x: 0, y: 25, img: "/work/post-1.webp"},
+  { id:  3, label: "Publicity Material", cat: "Sirkits Merch Release", w: 260, h: 260, x: 0, y: -25, img: "/work/post-2.webp" },
+  { id:  4, label: "Publicity Material", cat: "Bytecamp 3.0", w: 270, h: 337, x: 0, y: 0, img: "/work/post-3.webp" },
+  { id:  5, label: "Project 05", cat: "Motion  ", w: 228, h: 192, x: 0, y: 0, img: undefined },
+  { id:  6, label: "Project 06", cat: "Product ", w: 180, h: 240, x: 0, y: 0, img: undefined },
+  { id:  7, label: "Project 07", cat: "Poster  ", w: 216, h: 168, x: 0, y: 0, img: undefined },
+  { id:  8, label: "Project 08", cat: "Branding", w: 240, h: 252, x: 0, y: 0, img: undefined },
+  { id:  9, label: "Project 09", cat: "UI      ", w: 192, h: 264, x: 0, y: 0, img: undefined },
+  { id: 10, label: "Project 10", cat: "Motion  ", w: 228, h: 192, x: 0, y: 75, img: undefined },
+  { id: 11, label: "Project 11", cat: "Product ", w: 180, h: 240, x: 0, y: 0, img: undefined },
+  { id: 12, label: "Project 12", cat: "Poster  ", w: 216, h: 168, x: 0, y: 0, img: undefined },
+  { id: 13, label: "Project 13", cat: "Branding", w: 240, h: 252, x: 0, y: 0, img: undefined },
+  { id: 14, label: "Project 14", cat: "UI      ", w: 192, h: 264, x: 0, y: 0, img: undefined },
+  { id: 15, label: "Project 15", cat: "Motion  ", w: 228, h: 192, x: 0, y: 0, img: undefined },
+  { id: 16, label: "Project 16", cat: "Product ", w: 180, h: 240, x: 0, y: 0, img: undefined },
+  { id: 17, label: "Project 17", cat: "Poster  ", w: 216, h: 168, x: 0, y: 0, img: undefined },
+  { id: 18, label: "Project 18", cat: "Branding", w: 240, h: 252, x: 0, y: 0, img: undefined },
+  { id: 19, label: "Project 19", cat: "UI      ", w: 192, h: 264, x: 0, y: 0, img: undefined },
+  { id: 20, label: "Project 20", cat: "Motion  ", w: 228, h: 192, x: 0, y: 0, img: undefined },
+  { id: 21, label: "Project 21", cat: "Product ", w: 180, h: 240, x: 0, y: 0, img: undefined },
+  { id: 22, label: "Project 22", cat: "Poster  ", w: 216, h: 168, x: 0, y: 0, img: undefined },
+  { id: 23, label: "Project 23", cat: "Branding", w: 240, h: 252, x: 0, y: 0, img: undefined },
+  { id: 24, label: "Project 24", cat: "UI      ", w: 192, h: 264, x: 0, y: 0, img: undefined },
+  { id: 25, label: "Project 25", cat: "Motion  ", w: 228, h: 192, x: 0, y: 0, img: undefined },
+  { id: 26, label: "Project 26", cat: "Product ", w: 180, h: 240, x: 0, y: 0, img: undefined },
+  { id: 27, label: "Project 27", cat: "Poster  ", w: 216, h: 168, x: 0, y: 0, img: undefined },
+  { id: 28, label: "Project 28", cat: "Branding", w: 240, h: 252, x: 0, y: 0, img: undefined },
+  { id: 29, label: "Project 29", cat: "UI      ", w: 192, h: 264, x: 0, y: 0, img: undefined },
+  { id: 30, label: "Project 30", cat: "Motion  ", w: 228, h: 192, x: 0, y: 0, img: undefined },
 ];
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -60,11 +60,11 @@ const CARDS: CardDef[] = [
 const LAYOUT = {
   COLS: 6,
   ROWS: 5,
-  CELL_W: 560,
-  CELL_H: 580,
-  MAX_CARD_W: 400,
-  MAX_CARD_H: 450,
-  WRAP_BUFFER: 600,
+  CELL_W: 340,   // tighter — fits ~5 cards across a 1920px screen
+  CELL_H: 320,   // tighter vertically too
+  MAX_CARD_W: 280,
+  MAX_CARD_H: 280,
+  WRAP_BUFFER: 400,
 };
 
 const WORLD_W = LAYOUT.COLS * LAYOUT.CELL_W;
@@ -228,7 +228,6 @@ export default function Playground() {
   const NAV_LINKS = [
     { label: "WORK",       href: "/" },
     { label: "PLAYGROUND", href: "/playground" },
-    { label: "LIBRARY",    href: "#" },
     { label: "ABOUT",      href: "#" },
   ];
 
@@ -261,7 +260,7 @@ export default function Playground() {
               <Link
                 key={item.label}
                 href={item.href}
-                style={styles.navLink(item.label === "PLAYGROUND")}
+                style={styles.navLink(false)}
                 className="nav-link"
               >
                 {item.label}
