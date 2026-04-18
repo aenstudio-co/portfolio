@@ -17,39 +17,41 @@ interface CardDef {
   img?: string;
   w: number;
   h: number;
+  x?: number;   // optional pixel nudge from grid position (positive = right)
+  y?: number;   // optional pixel nudge from grid position (positive = down)
 }
 
 const CARDS: CardDef[] = [
-  { id:  1, label: "Project 01", cat: "Product",  w: 300, h: 400, img: undefined },
-  { id:  2, label: "Project 02", cat: "Poster",   w: 360, h: 280, img: undefined },
-  { id:  3, label: "Project 03", cat: "Branding", w: 400, h: 420, img: undefined },
-  { id:  4, label: "Project 04", cat: "UI",       w: 320, h: 440, img: undefined },
-  { id:  5, label: "Project 05", cat: "Motion",   w: 380, h: 320, img: undefined },
-  { id:  6, label: "Project 06", cat: "Product",  w: 300, h: 400, img: undefined },
-  { id:  7, label: "Project 07", cat: "Poster",   w: 360, h: 280, img: undefined },
-  { id:  8, label: "Project 08", cat: "Branding", w: 400, h: 420, img: undefined },
-  { id:  9, label: "Project 09", cat: "UI",       w: 320, h: 440, img: undefined },
-  { id: 10, label: "Project 10", cat: "Motion",   w: 380, h: 320, img: undefined },
-  { id: 11, label: "Project 11", cat: "Product",  w: 300, h: 400, img: undefined },
-  { id: 12, label: "Project 12", cat: "Poster",   w: 360, h: 280, img: undefined },
-  { id: 13, label: "Project 13", cat: "Branding", w: 400, h: 420, img: undefined },
-  { id: 14, label: "Project 14", cat: "UI",       w: 320, h: 440, img: undefined },
-  { id: 15, label: "Project 15", cat: "Motion",   w: 380, h: 320, img: undefined },
-  { id: 16, label: "Project 16", cat: "Product",  w: 300, h: 400, img: undefined },
-  { id: 17, label: "Project 17", cat: "Poster",   w: 360, h: 280, img: undefined },
-  { id: 18, label: "Project 18", cat: "Branding", w: 400, h: 420, img: undefined },
-  { id: 19, label: "Project 19", cat: "UI",       w: 320, h: 440, img: undefined },
-  { id: 20, label: "Project 20", cat: "Motion",   w: 380, h: 320, img: undefined },
-  { id: 21, label: "Project 21", cat: "Product",  w: 300, h: 400, img: undefined },
-  { id: 22, label: "Project 22", cat: "Poster",   w: 360, h: 280, img: undefined },
-  { id: 23, label: "Project 23", cat: "Branding", w: 400, h: 420, img: undefined },
-  { id: 24, label: "Project 24", cat: "UI",       w: 320, h: 440, img: undefined },
-  { id: 25, label: "Project 25", cat: "Motion",   w: 380, h: 320, img: undefined },
-  { id: 26, label: "Project 26", cat: "Product",  w: 300, h: 400, img: undefined },
-  { id: 27, label: "Project 27", cat: "Poster",   w: 360, h: 280, img: undefined },
-  { id: 28, label: "Project 28", cat: "Branding", w: 400, h: 420, img: undefined },
-  { id: 29, label: "Project 29", cat: "UI",       w: 320, h: 440, img: undefined },
-  { id: 30, label: "Project 30", cat: "Motion",   w: 380, h: 320, img: undefined },
+  { id:  1, label: "Project 01", cat: "Product ", w: 370, h: 296, x: 0, y: 0, img: "/work/illustration-3.webp" },
+  { id:  2, label: "Project 02", cat: "Poster  ", w: 360, h: 280, x: 0, y: 0, img: undefined },
+  { id:  3, label: "Project 03", cat: "Branding", w: 400, h: 420, x: 0, y: 0, img: undefined },
+  { id:  4, label: "Project 04", cat: "UI      ", w: 320, h: 440, x: 0, y: 0, img: undefined },
+  { id:  5, label: "Project 05", cat: "Motion  ", w: 380, h: 320, x: 0, y: 0, img: undefined },
+  { id:  6, label: "Project 06", cat: "Product ", w: 300, h: 400, x: 0, y: 0, img: undefined },
+  { id:  7, label: "Project 07", cat: "Poster  ", w: 360, h: 280, x: 0, y: 0, img: undefined },
+  { id:  8, label: "Project 08", cat: "Branding", w: 400, h: 420, x: 0, y: 0, img: undefined },
+  { id:  9, label: "Project 09", cat: "UI      ", w: 320, h: 440, x: 0, y: 0, img: undefined },
+  { id: 10, label: "Project 10", cat: "Motion  ", w: 380, h: 320, x: 0, y: 0, img: undefined },
+  { id: 11, label: "Project 11", cat: "Product ", w: 300, h: 400, x: 0, y: 0, img: undefined },
+  { id: 12, label: "Project 12", cat: "Poster  ", w: 360, h: 280, x: 0, y: 0, img: undefined },
+  { id: 13, label: "Project 13", cat: "Branding", w: 400, h: 420, x: 0, y: 0, img: undefined },
+  { id: 14, label: "Project 14", cat: "UI      ", w: 320, h: 440, x: 0, y: 0, img: undefined },
+  { id: 15, label: "Project 15", cat: "Motion  ", w: 380, h: 320, x: 0, y: 0, img: undefined },
+  { id: 16, label: "Project 16", cat: "Product ", w: 300, h: 400, x: 0, y: 0, img: undefined },
+  { id: 17, label: "Project 17", cat: "Poster  ", w: 360, h: 280, x: 0, y: 0, img: undefined },
+  { id: 18, label: "Project 18", cat: "Branding", w: 400, h: 420, x: 0, y: 0, img: undefined },
+  { id: 19, label: "Project 19", cat: "UI      ", w: 320, h: 440, x: 0, y: 0, img: undefined },
+  { id: 20, label: "Project 20", cat: "Motion  ", w: 380, h: 320, x: 0, y: 0, img: undefined },
+  { id: 21, label: "Project 21", cat: "Product ", w: 300, h: 400, x: 0, y: 0, img: undefined },
+  { id: 22, label: "Project 22", cat: "Poster  ", w: 360, h: 280, x: 0, y: 0, img: undefined },
+  { id: 23, label: "Project 23", cat: "Branding", w: 400, h: 420, x: 0, y: 0, img: undefined },
+  { id: 24, label: "Project 24", cat: "UI      ", w: 320, h: 440, x: 0, y: 0, img: undefined },
+  { id: 25, label: "Project 25", cat: "Motion  ", w: 380, h: 320, x: 0, y: 0, img: undefined },
+  { id: 26, label: "Project 26", cat: "Product ", w: 300, h: 400, x: 0, y: 0, img: undefined },
+  { id: 27, label: "Project 27", cat: "Poster  ", w: 360, h: 280, x: 0, y: 0, img: undefined },
+  { id: 28, label: "Project 28", cat: "Branding", w: 400, h: 420, x: 0, y: 0, img: undefined },
+  { id: 29, label: "Project 29", cat: "UI      ", w: 320, h: 440, x: 0, y: 0, img: undefined },
+  { id: 30, label: "Project 30", cat: "Motion  ", w: 380, h: 320, x: 0, y: 0, img: undefined },
 ];
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -161,12 +163,13 @@ export default function Playground() {
   const panOffset = useRef({ x: 0, y: 0 });
 
   const basePositions = useRef(
-    CARDS.map((_, i) => {
+    CARDS.map((card, i) => {
       const col = i % LAYOUT.COLS;
       const row = Math.floor(i / LAYOUT.COLS);
       return {
-        x: col * LAYOUT.CELL_W + (LAYOUT.CELL_W - LAYOUT.MAX_CARD_W) / 2,
-        y: row * LAYOUT.CELL_H + (LAYOUT.CELL_H - LAYOUT.MAX_CARD_H) / 2,
+        // Grid base position + optional per-card x/y nudge
+        x: col * LAYOUT.CELL_W + (LAYOUT.CELL_W - LAYOUT.MAX_CARD_W) / 2 + (card.x ?? 0),
+        y: row * LAYOUT.CELL_H + (LAYOUT.CELL_H - LAYOUT.MAX_CARD_H) / 2 + (card.y ?? 0),
       };
     })
   );
@@ -225,6 +228,7 @@ export default function Playground() {
   const NAV_LINKS = [
     { label: "WORK",       href: "/" },
     { label: "PLAYGROUND", href: "/playground" },
+    { label: "LIBRARY",    href: "#" },
     { label: "ABOUT",      href: "#" },
   ];
 
