@@ -56,21 +56,20 @@ const CARDS: CardDef[] = [
    LAYOUT CONFIG — tweak these values to adjust spacing and world size
 ───────────────────────────────────────────────────────────────────────── */
 const LAYOUT = {
-  COLS: 6,           // how many columns in the grid
-  ROWS: 5,           // how many rows (COLS × ROWS should equal CARDS.length)
-  CELL_W: 560,       // width of each grid cell — card + gap (increase for more spacing)
-  CELL_H: 580,       // height of each grid cell — card + gap
-  MAX_CARD_W: 400,   // used to center cards horizontally inside their cell
-  MAX_CARD_H: 450,   // used to center cards vertically inside their cell
-  WRAP_BUFFER: 600,  // how far off-screen a card can be before it wraps around
+  COLS: 6,
+  ROWS: 5,
+  CELL_W: 560,
+  CELL_H: 580,
+  MAX_CARD_W: 400,
+  MAX_CARD_H: 450,
+  WRAP_BUFFER: 600,
 };
 
-// Derived world size — no need to edit unless you change COLS/ROWS
 const WORLD_W = LAYOUT.COLS * LAYOUT.CELL_W;
 const WORLD_H = LAYOUT.ROWS * LAYOUT.CELL_H;
 
 /* ─────────────────────────────────────────────────────────────────────────
-   STYLES — fonts, nav, cards, etc.
+   STYLES
 ───────────────────────────────────────────────────────────────────────── */
 const FONT = "'Courier Prime', 'Courier New', monospace";
 const SANS = "Arial, Helvetica, sans-serif";
@@ -96,21 +95,25 @@ const styles = {
     height: 2, background: "#3B72C8", zIndex: 200, pointerEvents: "none",
   } as React.CSSProperties,
 
+  // Matches main page navStyle exactly
   nav: {
     position: "absolute", top: 0, left: 0, right: 0,
-    height: 43, display: "flex", alignItems: "center",
-    justifyContent: "space-between", padding: "0 36px",
-    zIndex: 300, background: "#fff",
+    height: 43,
+    display: "flex", alignItems: "center",
+    justifyContent: "space-between",
+    padding: "0 20px",
+    zIndex: 300, background: "#ffffff",
   } as React.CSSProperties,
 
   logo: {
-    fontFamily: FONT, fontSize: 14, letterSpacing: "0.10em",
-    color: "#707070", textDecoration: "none",
+    fontFamily: FONT, fontWeight: 400, fontSize: 14,
+    letterSpacing: "0.10em", color: "#707070", textDecoration: "none",
   } as React.CSSProperties,
 
   navLink: (active: boolean): React.CSSProperties => ({
-    fontFamily: FONT, fontSize: 13, letterSpacing: "0.14em",
-    color: "#111", textDecoration: active ? "underline" : "none",
+    fontFamily: FONT, fontWeight: 400, fontSize: 13,
+    letterSpacing: "0.14em", color: "#111",
+    textDecoration: active ? "underline" : "none",
     textUnderlineOffset: 3, textTransform: "uppercase",
   }),
 
@@ -157,7 +160,6 @@ export default function Playground() {
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const panOffset = useRef({ x: 0, y: 0 });
 
-  // Compute each card's base position in the infinite world
   const basePositions = useRef(
     CARDS.map((_, i) => {
       const col = i % LAYOUT.COLS;
@@ -170,21 +172,16 @@ export default function Playground() {
   );
 
   const renderPositions = useCallback(() => {
-    // Scroll dot grid in sync
     if (bgRef.current) {
       bgRef.current.style.transform = `translate3d(${panOffset.current.x % 18}px, ${panOffset.current.y % 18}px, 0)`;
     }
-
     cardRefs.current.forEach((ref, i) => {
       if (!ref) return;
       const base = basePositions.current[i];
       const x = base.x + panOffset.current.x;
       const y = base.y + panOffset.current.y;
-
-      // Wrap cards around the world edges for infinite scrolling
       const rx = (((x + LAYOUT.WRAP_BUFFER) % WORLD_W) + WORLD_W) % WORLD_W - LAYOUT.WRAP_BUFFER;
       const ry = (((y + LAYOUT.WRAP_BUFFER) % WORLD_H) + WORLD_H) % WORLD_H - LAYOUT.WRAP_BUFFER;
-
       ref.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
     });
   }, []);
@@ -225,7 +222,12 @@ export default function Playground() {
     window.addEventListener(isTouch ? "touchend" : "mouseup", onUp);
   };
 
-  const NAV_LINKS = ["WORK", "PLAYGROUND", "LIBRARY", "ABOUT"];
+  const NAV_LINKS = [
+    { label: "WORK",       href: "/" },
+    { label: "PLAYGROUND", href: "/playground" },
+    { label: "LIBRARY",    href: "#" },
+    { label: "ABOUT",      href: "#" },
+  ];
 
   return (
     <>
@@ -235,23 +237,31 @@ export default function Playground() {
         html, body { width: 100%; height: 100%; overflow: hidden; background: #fff; }
         .canvas { width: 100vw; height: 100vh; position: relative; overflow: hidden; cursor: grab; }
         .canvas:active { cursor: grabbing; }
+        @media (max-width: 640px) {
+          .nav-logo  { font-size: 12px !important; }
+          .nav-links { gap: 16px !important; }
+          .nav-link  { font-size: 10px !important; letter-spacing: 0.08em !important; }
+        }
       `}</style>
 
       <div className="canvas" onMouseDown={startDrag} onTouchStart={startDrag}>
         <div ref={bgRef} style={styles.dotGrid} />
+
+        {/* Accent stripes — matches main page exactly */}
         <div style={styles.accentRed} />
         <div style={styles.accentBlue} />
 
         <nav style={styles.nav}>
-          <Link href="/" style={styles.logo}>KRIS</Link>
-          <div style={{ display: "flex", gap: 40 }}>
-            {NAV_LINKS.map((l) => (
+          <Link href="/" style={styles.logo} className="nav-logo">KRIS</Link>
+          <div style={{ display: "flex", gap: 40 }} className="nav-links">
+            {NAV_LINKS.map((item) => (
               <Link
-                key={l}
-                href={l === "PLAYGROUND" ? "/playground" : "/"}
-                style={styles.navLink(l === "PLAYGROUND")}
+                key={item.label}
+                href={item.href}
+                style={styles.navLink(item.label === "PLAYGROUND")}
+                className="nav-link"
               >
-                {l}
+                {item.label}
               </Link>
             ))}
           </div>
