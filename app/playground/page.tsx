@@ -225,7 +225,6 @@ export default function Playground() {
   const NAV_LINKS = [
     { label: "WORK",       href: "/" },
     { label: "PLAYGROUND", href: "/playground" },
-    { label: "LIBRARY",    href: "#" },
     { label: "ABOUT",      href: "#" },
   ];
 
