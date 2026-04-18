@@ -15,16 +15,25 @@ interface Note {
   isUserAdded?: boolean;
 }
 
-/* ── Initial note definitions ──────────────────────────────── */
-const INITIAL_NOTES: Omit<Note, "content">[] = [
-  { id: "intro",     xPct: 8,  yPct: 28, color: "#43669e", width: 235, zIndex: 4 },
-  { id: "quote",     xPct: 38, yPct: 26, color: "#2f812f", width: 320, zIndex: 6 },
-  { id: "education", xPct: 22, yPct: 46, color: "#c06408", width: 250, zIndex: 8 },
-  { id: "red",       xPct: 48, yPct: 52, color: "#b02415", width: 200, zIndex: 5 },
+/* ── Desktop note layout ───────────────────────────────────── */
+const DESKTOP_NOTES: Omit<Note, "content">[] = [
+  { id: "intro",     xPct: 30, yPct: 25, color: "#43669e", width: 235, zIndex: 4 },
+  { id: "quote",     xPct: 50, yPct: 20, color: "#2f812f", width: 320, zIndex: 6 },
+  { id: "education", xPct: 44, yPct: 33, color: "#c06408", width: 250, zIndex: 8 },
+  { id: "red",       xPct: 50, yPct: 45, color: "#b02415", width: 200, zIndex: 5 },
+];
+
+/* ── Mobile note layout ────────────────────────────────────── */
+/* xPct/yPct are % of viewport, width in px (will render smaller on mobile) */
+const MOBILE_NOTES: Omit<Note, "content">[] = [
+  { id: "intro",     xPct: 12,  yPct: 28, color: "#43669e", width: 250, zIndex: 4 },
+  { id: "quote",     xPct: 26, yPct: 17, color: "#2f812f", width: 275, zIndex: 6 },
+  { id: "education", xPct: 38,  yPct: 48, color: "#c06408", width: 225, zIndex: 8 },
+  { id: "red",       xPct: 20, yPct: 57, color: "#b02415", width: 200, zIndex: 5 },
 ];
 
 /* ── Colors for user-added cards (cycles in order) ────────── */
-const USER_CARD_COLORS = ["#e76c8f", "#69b5cc", "#e6cb48", "#e1e1e1"];
+const USER_CARD_COLORS = ["#FFA0BB", "#C9E6EF", "#F1DD77", "#F7F6EF"];
 
 /* ── Card size from text length ────────────────────────────── */
 function cardSizeFromText(text: string): { width: number; minHeight: number } {
@@ -36,10 +45,15 @@ function cardSizeFromText(text: string): { width: number; minHeight: number } {
 }
 
 /* ── Random scatter near the default note cluster ──────────── */
-function randomSpawnPosition() {
-  // Keep within safe zone visible on both desktop and mobile
-  const xPct = 20 + Math.random() * 30;
-  const yPct = 30 + Math.random() * 25;
+function randomSpawnPosition(isMobile: boolean) {
+  if (isMobile) {
+    // Scatter within the mobile cluster zone
+    const xPct = 4 + Math.random() * 44;
+    const yPct = 10 + Math.random() * 55;
+    return { xPct, yPct };
+  }
+  const xPct = 28 + Math.random() * 30;
+  const yPct = 28 + Math.random() * 28;
   return { xPct, yPct };
 }
 
@@ -254,7 +268,17 @@ export default function Home() {
   const [deletedNotes, setDeletedNotes] = useState<Note[]>([]);
   const [topZ, setTopZ] = useState(10);
   const [epoch, setEpoch] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const colorIndexRef = useRef(0);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  const INITIAL_NOTES = isMobile ? MOBILE_NOTES : DESKTOP_NOTES;
 
   const buildNotes = useCallback((): Note[] => [
     {
@@ -289,14 +313,14 @@ export default function Home() {
       ...INITIAL_NOTES[3],
       content: <div />,
     },
-  ], []);
+  ], [isMobile]);
 
   useEffect(() => {
     setNotes(buildNotes());
     setDeletedNotes([]);
     setTopZ(10);
     colorIndexRef.current = 0;
-  }, [epoch, buildNotes]);
+  }, [epoch, isMobile, buildNotes]);
 
   const bringToFront = useCallback((id: string) => {
     setTopZ((z) => {
@@ -337,8 +361,10 @@ export default function Home() {
     const color = USER_CARD_COLORS[colorIndexRef.current % USER_CARD_COLORS.length];
     colorIndexRef.current += 1;
 
-    const { width, minHeight } = cardSizeFromText(text);
-    const { xPct, yPct } = randomSpawnPosition();
+    const { width, minHeight } = isMobile
+      ? { width: 140, minHeight: 140 }
+      : cardSizeFromText(text);
+    const { xPct, yPct } = randomSpawnPosition(isMobile);
 
     const newNote: Note = {
       id: `user-${Date.now()}`,
@@ -363,10 +389,6 @@ export default function Home() {
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { width: 100%; height: 100%; overflow: hidden; background: #fff; }
         @media (max-width: 640px) {
-          .note-card {
-            transform: scale(0.72);
-            transform-origin: top left;
-          }
           .explore-btn { bottom: 20px !important; left: 16px !important; }
           .hint-text { font-size: 11px !important; bottom: 22px !important; }
           .nav-logo { font-size: 12px !important; }
@@ -495,17 +517,16 @@ function DraggableNote({
   const dragging = useRef(false);
   const offset = useRef({ x: 0, y: 0 });
   const pos = useRef({ x: 0, y: 0 });
-  const [ready, setReady] = useState(false);
-
   useEffect(() => {
-    const x = (note.xPct / 100) * window.innerWidth;
-    const y = (note.yPct / 100) * window.innerHeight;
-    pos.current = { x, y };
+    // Sync pos.current from rendered CSS position so dragging starts correctly
     if (ref.current) {
-      ref.current.style.left = x + "px";
-      ref.current.style.top = y + "px";
+      const rect = ref.current.getBoundingClientRect();
+      const parentRect = ref.current.offsetParent?.getBoundingClientRect() ?? { left: 0, top: 0 };
+      pos.current = {
+        x: rect.left - parentRect.left,
+        y: rect.top - parentRect.top,
+      };
     }
-    setReady(true);
   }, [note.xPct, note.yPct]);
 
   const startDrag = (clientX: number, clientY: number) => {
@@ -549,7 +570,9 @@ function DraggableNote({
       onTouchStart={onTouchStart}
       className="note-card"
       style={{
-        position: "absolute", left: 0, top: 0,
+        position: "absolute",
+        left: `${note.xPct}vw`,
+        top: `calc(43px + ${note.yPct}vh)`,
         width: note.width,
         minHeight: note.minHeight ?? (note.id === "red" ? 200 : undefined),
         backgroundColor: note.color,
@@ -559,7 +582,6 @@ function DraggableNote({
         userSelect: "none",
         boxShadow: "3px 5px 16px rgba(0,0,0,0.22)",
         zIndex: note.zIndex,
-        visibility: ready ? "visible" : "hidden",
       }}
     >
       <button
