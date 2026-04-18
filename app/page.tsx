@@ -412,7 +412,6 @@ export default function Home() {
             {[
               { label: "WORK", href: "/" },
               { label: "PLAYGROUND", href: "/playground" },
-              { label: "LIBRARY", href: "#" },
               { label: "ABOUT", href: "#" },
             ].map((item) => (
               <Link key={item.label} href={item.href} style={navLinkStyle} className="nav-link">
@@ -435,7 +434,7 @@ export default function Home() {
           onRestart={restart}
         />
 
-        <p style={hintStyle} className="hint-text">(drag and clear notes)</p>
+        <p style={hintStyle} className="hint-text">(drag, add, and clear notes)</p>
       </div>
     </>
   );
