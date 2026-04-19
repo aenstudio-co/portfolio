@@ -374,22 +374,6 @@ function ProjectCard({ project }: { project: typeof PROJECTS[number] }) {
 }
 
 // ─── ProjectsSection ──────────────────────────────────────────────────────────
-//
-// HOW THE CAROUSEL WORKS (fixed approach):
-//
-// We render 2*WINDOW+1 = 7 cards in a flex row. The window is always centred
-// on virtualIdx, meaning slotIndices = [vIdx-3, vIdx-2, vIdx-1, vIdx, vIdx+1, vIdx+2, vIdx+3].
-//
-// The active card is always at position i=WINDOW (the middle slot of the array).
-// The track's translateX is CONSTANT — it never changes with virtualIdx:
-//
-//   trackX = vw/2 - slotPx/2 - WINDOW*step
-//
-// This places the middle slot (index WINDOW) exactly at the horizontal centre.
-// When virtualIdx increments, slotIndices shifts by 1, so new cards swap in
-// at the edges and the centre slot shows the new active card. Scale/opacity
-// transitions on each card provide the visual animation.
-//
 function ProjectsSection({
   virtualIdx,
   isMobile,
@@ -402,19 +386,22 @@ function ProjectsSection({
   const GAP    = 28;
   const WINDOW = 3;
 
-  const [slotPx, setSlotPx] = useState(() =>
-    typeof window !== "undefined" ? Math.min(660, 0.62 * window.innerWidth) : 660
-  );
-  const [vw, setVw] = useState(() =>
-    typeof window !== "undefined" ? window.innerWidth : 1440
-  );
+  // Initialize with neutral standard values for server hydration
+  const [slotPx, setSlotPx] = useState(660);
+  const [vw, setVw] = useState(1440);
 
   useEffect(() => {
-    if (isMobile) return;
+    // Only access window parameters on the client
     const onResize = () => {
       setSlotPx(Math.min(660, 0.62 * window.innerWidth));
       setVw(window.innerWidth);
     };
+    
+    // Set initially once mounted
+    onResize();
+
+    if (isMobile) return;
+    
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, [isMobile]);
@@ -429,7 +416,7 @@ function ProjectsSection({
       let startY = 0, startTop = 0;
       const onTS = (e: TouchEvent) => { startY = e.touches[0].clientY; startTop = el.scrollTop; };
       const onTE = (e: TouchEvent) => {
-        if (startTop === 0 && e.changedTouches[0].clientY - startY > 55) onBack();
+        if (startTop <= 5 && e.changedTouches[0].clientY - startY > 55) onBack();
       };
       el.addEventListener("touchstart", onTS, { passive: true });
       el.addEventListener("touchend",   onTE, { passive: true });
@@ -475,12 +462,9 @@ function ProjectsSection({
 
   // ── Desktop infinite carousel ────────────────────────────────────────────────
   const step = slotPx + GAP;
-
-  // trackX is FIXED: positions the middle slot at the viewport centre.
-  // virtualIdx is NOT subtracted here — it's already encoded in slotIndices.
-  const trackX = vw / 2 - slotPx / 2 - WINDOW * step;
-
-  // 7 slots always centred on virtualIdx
+  
+  // Track center anchor
+  const trackCenterX = vw / 2 - slotPx / 2;
   const slotIndices = Array.from({ length: 2 * WINDOW + 1 }, (_, i) => virtualIdx - WINDOW + i);
 
   return (
@@ -495,28 +479,28 @@ function ProjectsSection({
         pointerEvents: "none",
       }} />
 
-      {/* Track — translateX is constant; card swap provides the animation */}
+      {/* Track anchor — Absolute positioned elements to allow smooth offset transitions */}
       <div style={{
         position: "absolute",
         top: "50%",
-        left: 0,
-        display: "flex",
-        flexDirection: "row",
-        gap: GAP,
-        transform: `translateX(${trackX}px) translateY(-52%)`,
-        // No transition on the track itself — individual card transitions handle it
+        left: trackCenterX,
+        width: slotPx,
+        height: "calc(100vh - 190px)",
+        transform: "translateY(-52%)",
       }}>
-        {slotIndices.map((slotIdx, i) => {
+        {slotIndices.map((slotIdx) => {
           const projIdx  = ((slotIdx % N) + N) % N;
-          const isActive = i === WINDOW; // middle slot = active
+          const offset   = slotIdx - virtualIdx;
+          const isActive = offset === 0;
           return (
             <div
               key={slotIdx}
               style={{
-                width: slotPx,
-                height: "calc(100vh - 190px)",
-                flexShrink: 0,
-                transform: isActive ? "scale(1)" : "scale(0.94)",
+                position: "absolute",
+                top: 0, left: 0,
+                width: "100%",
+                height: "100%",
+                transform: `translateX(${offset * step}px) scale(${isActive ? 1 : 0.94})`,
                 opacity:   isActive ? 1 : 0.5,
                 transition: "transform 0.52s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.52s ease",
               }}
@@ -690,6 +674,7 @@ function ExploreButton({
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function Home() {
+  const [mounted,      setMounted]      = useState(false);
   const [isMobile,     setIsMobile]     = useState(false);
   const [notes,        setNotes]        = useState<Note[]>([]);
   const [deletedNotes, setDeletedNotes] = useState<Note[]>([]);
@@ -753,11 +738,26 @@ export default function Home() {
   // ── Global wheel + touch ──────────────────────────────────────────────────
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
-      if (isMobileRef.current && showProjectsRef.current) return;
+      const delta = Math.abs(e.deltaX) >= Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+
+      // Ensure mouse scroll wheel works in mobile views to go back up 
+      if (isMobileRef.current && showProjectsRef.current) {
+        const el = document.querySelector('.mobile-projects-scroll');
+        if (el && el.scrollTop <= 5 && delta < 0) {
+          e.preventDefault();
+          wheelAccum.current += delta;
+          if (wheelAccum.current <= -60) {
+            wheelAccum.current = 0;
+            goBackToNotes();
+          }
+        } else {
+          wheelAccum.current = 0;
+        }
+        return;
+      }
+
       e.preventDefault();
       if (notesBusy.current) return;
-
-      const delta = Math.abs(e.deltaX) >= Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
 
       if (!showProjectsRef.current) {
         // Notes mode — scroll down to enter projects
@@ -840,10 +840,11 @@ export default function Home() {
     };
   }, [goNext, goPrev, goBackToNotes]);
 
-  // ── Detect mobile ──────────────────────────────────────────────────────────
+  // ── Detect mobile & initial mount ──────────────────────────────────────────
   useEffect(() => {
+    setMounted(true);
     const check = () => setIsMobile(window.innerWidth <= 640);
-    check();
+    check(); // Initial check on the client
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
@@ -928,6 +929,12 @@ export default function Home() {
   }, [isMobile]);
 
   // ── Render ────────────────────────────────────────────────────────────────
+  
+  // Return an empty state with the core background to prevent flashing and hydration mismatch
+  if (!mounted) {
+    return <div style={{ background: "#3B5FA0", width: "100vw", height: "100vh" }} />;
+  }
+
   return (
     <>
       <style>{`
