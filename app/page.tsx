@@ -16,8 +16,6 @@ interface Note {
   isUserAdded?: boolean;
 }
 
-type CardPhase = "idle" | "flyingUp" | "staging" | "dropping";
-
 // ─── Static data ──────────────────────────────────────────────────────────────
 const FONT  = "'Courier Prime', 'Courier New', monospace";
 const CFONT = "Consolas, 'Courier New', monospace";
@@ -32,49 +30,55 @@ const DESKTOP_POSITIONS = [
 ];
 
 const MOBILE_POSITIONS = [
-  { id: "intro",     xPct: 9, yPct: 20, color: "#43669e", width: 250, zIndex: 7 },
-  { id: "quote",     xPct: 26, yPct: 10, color: "#2f812f", width: 275, zIndex: 6 },
-  { id: "education", xPct: 40, yPct: 40, color: "#c06408", width: 225, zIndex: 8 },
-  { id: "red",       xPct: 20, yPct: 50, color: "#b02415", width: 200, zIndex: 5 },
+  { id: "intro",     xPct: 12, yPct: 28, color: "#43669e", width: 250, zIndex: 4 },
+  { id: "quote",     xPct: 26, yPct: 17, color: "#2f812f", width: 275, zIndex: 6 },
+  { id: "education", xPct: 38, yPct: 48, color: "#c06408", width: 225, zIndex: 8 },
+  { id: "red",       xPct: 20, yPct: 57, color: "#b02415", width: 200, zIndex: 5 },
 ];
 
-const PROJECTS = [
+const PROJECTS: {
+  id: number;
+  label: string;
+  cat: string;
+  btnColor: string;
+  btnLabel: string;
+  href: string | null;
+}[] = [
   {
     id: 0,
     label: "The Render House",
     cat: "An open-source library of designs that transforms everyday graphics into collectible statements.",
-    color: "#E03030",
+    btnColor: "#E03030",
+    btnLabel: "VIEW",
     href: "https://therenderhouse.com",
-    btn: "View",
   },
   {
     id: 1,
     label: "The ABC Archive",
     cat: "A curated repository where physical objects, digital systems, and visual narratives converge into a continuum of design.",
-    color: "#3B72C8",
+    btnColor: "#3B72C8",
+    btnLabel: "VIEW",
     href: "https://theabcarchive.com",
-    btn: "View",
   },
   {
     id: 2,
     label: "Generative Thinking",
-    cat: "An exploration of generative design processes — where systems, randomness, and authorship blur into something new.",
-    color: "#E03030",
+    cat: "An ongoing exploration of generative systems as tools for creative and conceptual design practice.",
+    btnColor: "#999",
+    btnLabel: "IN PROGRESS",
     href: null,
-    btn: "In Progress",
   },
   {
     id: 3,
     label: "Konsept",
-    cat: "A design tool built for quick and easy visualization. Designed for creators of all kinds, it allows you to transform any idea into a clear sketch in just minutes.",
-    color: "#3B72C8",
+    cat: "A design tool built for quick and easy visualization. Designed for creators of all kinds.",
+    btnColor: "#999",
+    btnLabel: "IN PROGRESS",
     href: null,
-    btn: "In Progress",
   },
 ];
 
 const N = PROJECTS.length;
-const ANIM = 520; // ms — card animation duration
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 const titleStyle: React.CSSProperties = {
@@ -278,141 +282,211 @@ function NotesSection({
 }
 
 // ─── ProjectCard ──────────────────────────────────────────────────────────────
-function ProjectCard({
-  project, style,
-}: {
-  project: typeof PROJECTS[number];
-  style: React.CSSProperties;
-}) {
+function ProjectCard({ project }: { project: typeof PROJECTS[number] }) {
   return (
-    <div style={style} className="project-card">
+    <div style={{
+      width: "100%",
+      height: "100%",
+      borderRadius: 14,
+      background: "#fff",
+      boxShadow: "0 20px 60px rgba(0,0,0,0.26)",
+      display: "flex",
+      flexDirection: "column",
+      overflow: "hidden",
+    }}>
       <div style={{
-        width: "100%", height: "100%",
-        borderRadius: 14,
+        flex: 1,
+        background: "#e8e8e6",
+        borderRadius: "14px 14px 0 0",
+      }} />
+      <div style={{
+        padding: "12px 16px 14px",
+        borderTop: "1px solid #eaeaea",
         background: "#fff",
-        boxShadow: "0 24px 72px rgba(0,0,0,0.28)",
         display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 12,
+        flexShrink: 0,
       }}>
-        {/* Image area */}
-        <div style={{
-          flex: 1,
-          background: "#e8e8e6",
-          borderRadius: "14px 14px 0 0",
-          position: "relative",
-        }} />
-
-        {/* Info strip */}
-        <div style={{
-          padding: "12px 16px 14px",
-          borderTop: "1px solid #eaeaea",
-          background: "#fff",
-          display: "flex",
-          flexWrap: "wrap",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: "6px 12px",
-        }}>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{
-              fontFamily: CFONT, fontSize: 14, color: "#111",
-              letterSpacing: "0.05em", textTransform: "uppercase",
-              marginBottom: 4,
-              whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
-            }}>
-              {project.label}
-            </p>
-            <p style={{
-              fontFamily: CFONT, fontSize: 11.5, color: "#777",
-              lineHeight: 1.55,
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
-            }}>
-              {project.cat}
-            </p>
-          </div>
-
-          {/* Action button — pill, not circle */}
-          {project.href ? (
-            <a
-              href={project.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                flexShrink: 0,
-                display: "inline-flex", alignItems: "center",
-                padding: "6px 14px",
-                borderRadius: 2,
-                border: "1px solid #111",
-                background: "transparent",
-                fontFamily: CFONT, fontSize: 10,
-                color: "#111", letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                textDecoration: "none",
-                whiteSpace: "nowrap",
-                cursor: "pointer",
-                transition: "background 0.15s, color 0.15s",
-              }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.background = "#111";
-                (e.currentTarget as HTMLElement).style.color = "#fff";
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.background = "transparent";
-                (e.currentTarget as HTMLElement).style.color = "#111";
-              }}
-            >
-              View ↗
-            </a>
-          ) : (
-            <span style={{
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{
+            fontFamily: CFONT, fontSize: 14, color: "#111",
+            letterSpacing: "0.05em", textTransform: "uppercase",
+            marginBottom: 4,
+            whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+          }}>
+            {project.label}
+          </p>
+          <p style={{
+            fontFamily: CFONT, fontSize: 11.5, color: "#777",
+            lineHeight: 1.55,
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }}>
+            {project.cat}
+          </p>
+        </div>
+        {project.href ? (
+          <a
+            href={project.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
               flexShrink: 0,
               display: "inline-flex", alignItems: "center",
-              padding: "6px 14px",
-              borderRadius: 2,
-              border: "1px solid #ddd",
-              fontFamily: CFONT, fontSize: 10,
-              color: "#bbb", letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              whiteSpace: "nowrap",
-            }}>
-              In Progress
-            </span>
-          )}
-        </div>
+              padding: "6px 14px", borderRadius: 2,
+              border: "1px solid #111", background: "transparent",
+              fontFamily: CFONT, fontSize: 10, color: "#111",
+              letterSpacing: "0.12em", textTransform: "uppercase",
+              textDecoration: "none", whiteSpace: "nowrap",
+              cursor: "pointer", transition: "background 0.15s, color 0.15s",
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLElement).style.background = "#111";
+              (e.currentTarget as HTMLElement).style.color = "#fff";
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLElement).style.background = "transparent";
+              (e.currentTarget as HTMLElement).style.color = "#111";
+            }}
+          >
+            View ↗
+          </a>
+        ) : (
+          <span style={{
+            flexShrink: 0,
+            display: "inline-flex", alignItems: "center",
+            padding: "6px 14px", borderRadius: 2,
+            border: "1px solid #ddd",
+            fontFamily: CFONT, fontSize: 10, color: "#bbb",
+            letterSpacing: "0.12em", textTransform: "uppercase",
+            whiteSpace: "nowrap",
+          }}>
+            In Progress
+          </span>
+        )}
       </div>
     </div>
   );
 }
 
 // ─── ProjectsSection ──────────────────────────────────────────────────────────
+//
+// HOW THE CAROUSEL WORKS (fixed approach):
+//
+// We render 2*WINDOW+1 = 7 cards in a flex row. The window is always centred
+// on virtualIdx, meaning slotIndices = [vIdx-3, vIdx-2, vIdx-1, vIdx, vIdx+1, vIdx+2, vIdx+3].
+//
+// The active card is always at position i=WINDOW (the middle slot of the array).
+// The track's translateX is CONSTANT — it never changes with virtualIdx:
+//
+//   trackX = vw/2 - slotPx/2 - WINDOW*step
+//
+// This places the middle slot (index WINDOW) exactly at the horizontal centre.
+// When virtualIdx increments, slotIndices shifts by 1, so new cards swap in
+// at the edges and the centre slot shows the new active card. Scale/opacity
+// transitions on each card provide the visual animation.
+//
 function ProjectsSection({
-  topIdx, phase, stagingIdx,
+  virtualIdx,
+  isMobile,
+  onBack,
 }: {
-  topIdx: number;
-  phase: CardPhase;
-  stagingIdx: number | null;
+  virtualIdx: number;
+  isMobile: boolean;
+  onBack: () => void;
 }) {
-  const slots = [0, 1, 2].map(o => (topIdx + o) % N);
-  const showStaging = (phase === "staging" || phase === "dropping") && stagingIdx !== null;
+  const GAP    = 28;
+  const WINDOW = 3;
 
-  const restingTransform = (slot: number) => {
-    const peekY     = slot * 18;
-    const peekScale = 1 - slot * 0.04;
-    // shift center slightly up so stacked cards peek below without clipping
-    return `translateX(-50%) translateY(calc(-52% + ${peekY}px)) scale(${peekScale})`;
-  };
+  const [slotPx, setSlotPx] = useState(() =>
+    typeof window !== "undefined" ? Math.min(660, 0.62 * window.innerWidth) : 660
+  );
+  const [vw, setVw] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth : 1440
+  );
+
+  useEffect(() => {
+    if (isMobile) return;
+    const onResize = () => {
+      setSlotPx(Math.min(660, 0.62 * window.innerWidth));
+      setVw(window.innerWidth);
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [isMobile]);
+
+  // Mobile: pull-down from top → back to notes
+  const mobileRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!isMobile) return;
+    const frame = requestAnimationFrame(() => {
+      const el = mobileRef.current;
+      if (!el) return;
+      let startY = 0, startTop = 0;
+      const onTS = (e: TouchEvent) => { startY = e.touches[0].clientY; startTop = el.scrollTop; };
+      const onTE = (e: TouchEvent) => {
+        if (startTop === 0 && e.changedTouches[0].clientY - startY > 55) onBack();
+      };
+      el.addEventListener("touchstart", onTS, { passive: true });
+      el.addEventListener("touchend",   onTE, { passive: true });
+      (el as HTMLDivElement & { _cleanup?: () => void })._cleanup = () => {
+        el.removeEventListener("touchstart", onTS);
+        el.removeEventListener("touchend",   onTE);
+      };
+    });
+    return () => {
+      cancelAnimationFrame(frame);
+      const el = mobileRef.current as (HTMLDivElement & { _cleanup?: () => void }) | null;
+      el?._cleanup?.();
+    };
+  }, [isMobile, onBack]);
+
+  // ── Mobile layout ────────────────────────────────────────────────────────────
+  if (isMobile) {
+    return (
+      <div ref={mobileRef} className="mobile-projects-scroll" style={{
+        position: "fixed", inset: 0, zIndex: 150,
+        background: "#3B5FA0", overflowY: "auto", overflowX: "hidden",
+      }}>
+        <div style={{
+          position: "fixed", inset: 0,
+          backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.25) 1px, transparent 1.3px)",
+          backgroundSize: "18px 18px", backgroundPosition: "13px 13px",
+          pointerEvents: "none", zIndex: 0,
+        }} />
+        <div style={{
+          position: "relative", zIndex: 1,
+          padding: "56px 16px 80px",
+          display: "flex", flexDirection: "column", gap: 18,
+        }}>
+          {PROJECTS.map(project => (
+            <div key={project.id} style={{ width: "100%", height: "calc(100vw - 32px)", maxHeight: 400 }}>
+              <ProjectCard project={project} />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Desktop infinite carousel ────────────────────────────────────────────────
+  const step = slotPx + GAP;
+
+  // trackX is FIXED: positions the middle slot at the viewport centre.
+  // virtualIdx is NOT subtracted here — it's already encoded in slotIndices.
+  const trackX = vw / 2 - slotPx / 2 - WINDOW * step;
+
+  // 7 slots always centred on virtualIdx
+  const slotIndices = Array.from({ length: 2 * WINDOW + 1 }, (_, i) => virtualIdx - WINDOW + i);
 
   return (
     <div style={{
       position: "fixed", inset: 0, zIndex: 150,
-      background: "#3B5FA0",
-      overflow: "hidden",
-      perspective: "1200px",
-      perspectiveOrigin: "50% 50%",
+      background: "#3B5FA0", overflow: "hidden",
     }}>
       <div style={{
         position: "absolute", inset: 0,
@@ -421,73 +495,37 @@ function ProjectsSection({
         pointerEvents: "none",
       }} />
 
-      {[...slots].reverse().map((projectIdx, ri) => {
-        const slot       = slots.length - 1 - ri;
-        const isTop      = slot === 0;
-        const isFlyingUp = phase === "flyingUp" && isTop;
-        const effectiveSlot = showStaging && !isFlyingUp ? slot + 1 : slot;
-
-        let transform:  string;
-        let transition: string;
-        let opacity     = 1;
-
-        if (isFlyingUp) {
-          transform  = `translateX(-50%) translateY(calc(-50% - 115vh)) rotateX(-25deg) scale(1.02)`;
-          transition = `transform ${ANIM}ms cubic-bezier(0.4, 0, 1, 1)`;
-        } else {
-          transform  = restingTransform(effectiveSlot);
-          if (effectiveSlot > 2) opacity = 0;
-          transition = phase !== "idle"
-            ? `transform ${ANIM}ms cubic-bezier(0.32, 1.2, 0.5, 1), opacity 0.2s ease`
-            : `transform 0.35s cubic-bezier(0.32, 1, 0.5, 1), opacity 0.2s ease`;
-        }
-
-        return (
-          <ProjectCard
-            key={projectIdx}
-            project={PROJECTS[projectIdx]}
-            style={{
-              position: "absolute",
-              top: "50%", left: "50%",
-              width: "min(700px, 74vw)",
-              height: "calc(100vh - 190px)",
-              transform,
-              transition,
-              opacity,
-              zIndex: 10 - slot,
-              willChange: "transform, opacity",
-              transformStyle: "preserve-3d",
-            }}
-          />
-        );
-      })}
-
-      {showStaging && stagingIdx !== null && (() => {
-        const isStaging  = phase === "staging";
-        const transform  = isStaging
-          ? `translateX(-50%) translateY(calc(-50% - 115vh)) rotateX(20deg) scale(1.02)`
-          : restingTransform(0);
-        const transition = isStaging
-          ? "none"
-          : `transform ${ANIM}ms cubic-bezier(0.22, 1.4, 0.36, 1)`;
-        return (
-          <ProjectCard
-            key={`staging-${stagingIdx}`}
-            project={PROJECTS[stagingIdx]}
-            style={{
-              position: "absolute",
-              top: "50%", left: "50%",
-              width: "min(700px, 74vw)",
-              height: "calc(100vh - 190px)",
-              transform,
-              transition,
-              zIndex: 20,
-              willChange: "transform",
-              transformStyle: "preserve-3d",
-            }}
-          />
-        );
-      })()}
+      {/* Track — translateX is constant; card swap provides the animation */}
+      <div style={{
+        position: "absolute",
+        top: "50%",
+        left: 0,
+        display: "flex",
+        flexDirection: "row",
+        gap: GAP,
+        transform: `translateX(${trackX}px) translateY(-52%)`,
+        // No transition on the track itself — individual card transitions handle it
+      }}>
+        {slotIndices.map((slotIdx, i) => {
+          const projIdx  = ((slotIdx % N) + N) % N;
+          const isActive = i === WINDOW; // middle slot = active
+          return (
+            <div
+              key={slotIdx}
+              style={{
+                width: slotPx,
+                height: "calc(100vh - 190px)",
+                flexShrink: 0,
+                transform: isActive ? "scale(1)" : "scale(0.94)",
+                opacity:   isActive ? 1 : 0.5,
+                transition: "transform 0.52s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.52s ease",
+              }}
+            >
+              <ProjectCard project={PROJECTS[projIdx]} />
+            </div>
+          );
+        })}
+      </div>
 
       <p style={{
         position: "absolute", bottom: 22, left: "50%",
@@ -497,24 +535,8 @@ function ProjectsSection({
         letterSpacing: "0.14em", zIndex: 30,
         whiteSpace: "nowrap",
       }}>
-        ({topIdx + 1} OUT OF {N})
+        ({((virtualIdx % N) + N) % N + 1} OUT OF {N})
       </p>
-
-      <div style={{
-        position: "absolute", right: 24, top: "50%",
-        transform: "translateY(-50%)",
-        display: "flex", flexDirection: "column",
-        gap: 8, zIndex: 30,
-      }}>
-        {PROJECTS.map((_, i) => (
-          <div key={i} style={{
-            width: 6, borderRadius: 3,
-            height: i === topIdx ? 22 : 6,
-            background: i === topIdx ? "#fff" : "rgba(255,255,255,0.3)",
-            transition: "height 0.3s ease, background 0.3s ease",
-          }} />
-        ))}
-      </div>
     </div>
   );
 }
@@ -565,10 +587,9 @@ function ExploreButton({
         background: open ? "#3B72C8" : "#fff",
         border: open ? "1px solid #3B72C8" : "1px solid #e0e0e0",
         boxShadow: "2px 3px 8px rgba(0,0,0,0.12)",
-        fontFamily: FONT, fontSize: 16, fontWeight: 700, lineHeight: 1,
+        fontFamily: FONT, fontSize: 16, fontWeight: 700,
         color: open ? "#fff" : "#111", cursor: "default",
         display: "flex", alignItems: "center", justifyContent: "center",
-        paddingBottom: 2,
         transition: "background 0.18s, color 0.18s, border-color 0.18s",
         position: "relative", zIndex: 602,
       }} title="Explore">!</button>
@@ -601,9 +622,7 @@ function ExploreButton({
             }}>{deletedCount}</span>
           )}
         </button>
-
         <div style={{ height: 1, background: "#ebebea", margin: "4px 0" }} />
-
         {!addMode ? (
           <button
             onClick={() => setAddMode(true)}
@@ -655,9 +674,7 @@ function ExploreButton({
             </div>
           </div>
         )}
-
         <div style={{ height: 1, background: "#ebebea", margin: "4px 0" }} />
-
         <button
           onClick={() => { setOpen(false); setAddMode(false); onRestart(); }}
           style={rowBtn}
@@ -678,15 +695,13 @@ export default function Home() {
   const [deletedNotes, setDeletedNotes] = useState<Note[]>([]);
   const [showProjects, setShowProjects] = useState(false);
 
-  const [topIdx,     setTopIdx]     = useState(0);
-  const [cardPhase,  setCardPhase]  = useState<CardPhase>("idle");
-  const [stagingIdx, setStagingIdx] = useState<number | null>(null);
+  const [virtualIdx, setVirtualIdx] = useState(0);
 
   const colorIndexRef = useRef(0);
   const initKeyRef    = useRef<string | null>(null);
 
-  const topZRef             = useRef(10);
-  const [topZ, _setTopZ]    = useState(10);
+  const topZRef      = useRef(10);
+  const [, _setTopZ] = useState(10);
   const setTopZ = useCallback((v: number | ((prev: number) => number)) => {
     _setTopZ(prev => {
       const next = typeof v === "function" ? v(prev) : v;
@@ -696,94 +711,60 @@ export default function Home() {
   }, []);
 
   const showProjectsRef = useRef(false);
-  const topIdxRef       = useRef(0);
+  const isMobileRef     = useRef(false);
   const cardBusy        = useRef(false);
   const notesBusy       = useRef(false);
   const wheelAccum      = useRef(0);
   const lastFire        = useRef(0);
   const touchStartY     = useRef(0);
+  const touchStartX     = useRef(0);
 
   useEffect(() => { showProjectsRef.current = showProjects; }, [showProjects]);
-  useEffect(() => { topIdxRef.current = topIdx; }, [topIdx]);
+  useEffect(() => { isMobileRef.current = isMobile; },       [isMobile]);
 
+  // ── Navigation ────────────────────────────────────────────────────────────
   const goNext = useCallback(() => {
+    if (cardBusy.current) return;
     cardBusy.current = true;
     wheelAccum.current = 0;
     lastFire.current = Date.now();
-    setCardPhase("flyingUp");
-    setTimeout(() => {
-      setTopIdx(i => {
-        const next = (i + 1) % N;
-        topIdxRef.current = next;
-        return next;
-      });
-      setCardPhase("idle");
-      cardBusy.current = false;
-    }, ANIM);
+    setVirtualIdx(i => i + 1);
+    setTimeout(() => { cardBusy.current = false; }, 560);
   }, []);
 
   const goPrev = useCallback(() => {
-    const cur = topIdxRef.current;
-    if (cur === 0) {
-      notesBusy.current = true;
-      wheelAccum.current = 0;
-      setShowProjects(false);
-      showProjectsRef.current = false;
-      setTimeout(() => { notesBusy.current = false; }, 850);
-      return;
-    }
+    if (cardBusy.current) return;
     cardBusy.current = true;
     wheelAccum.current = 0;
     lastFire.current = Date.now();
-    const incoming = (cur - 1 + N) % N;
-    setStagingIdx(incoming);
-    setCardPhase("staging");
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        setTopIdx(incoming);
-        topIdxRef.current = incoming;
-        setCardPhase("dropping");
-        setTimeout(() => {
-          setCardPhase("idle");
-          setStagingIdx(null);
-          cardBusy.current = false;
-        }, ANIM);
-      });
-    });
+    setVirtualIdx(i => i - 1);
+    setTimeout(() => { cardBusy.current = false; }, 560);
   }, []);
 
+  const goBackToNotes = useCallback(() => {
+    if (notesBusy.current) return;
+    notesBusy.current = true;
+    wheelAccum.current = 0;
+    setShowProjects(false);
+    showProjectsRef.current = false;
+    setTimeout(() => { notesBusy.current = false; }, 850);
+  }, []);
+
+  // ── Global wheel + touch ──────────────────────────────────────────────────
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
+      if (isMobileRef.current && showProjectsRef.current) return;
       e.preventDefault();
-      if (notesBusy.current || cardBusy.current) return;
+      if (notesBusy.current) return;
+
+      const delta = Math.abs(e.deltaX) >= Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+
       if (!showProjectsRef.current) {
-        if (e.deltaY <= 0) {
-          wheelAccum.current = Math.max(0, wheelAccum.current - 20);
-          return;
-        }
-        wheelAccum.current += e.deltaY;
+        // Notes mode — scroll down to enter projects
+        if (delta <= 0) { wheelAccum.current = Math.max(0, wheelAccum.current - 20); return; }
+        wheelAccum.current += delta;
         if (wheelAccum.current > 120) {
           wheelAccum.current = 0;
-          notesBusy.current  = true;
-          setShowProjects(true);
-          showProjectsRef.current = true;
-          setTimeout(() => { notesBusy.current = false; }, 850);
-        }
-        return;
-      }
-      const now = Date.now();
-      if (now - lastFire.current < 120) return;
-      wheelAccum.current += e.deltaY;
-      if (wheelAccum.current >= 80) { wheelAccum.current = 0; goNext(); }
-      else if (wheelAccum.current <= -80) { wheelAccum.current = 0; goPrev(); }
-    };
-
-    const onTouchStart = (e: TouchEvent) => { touchStartY.current = e.touches[0].clientY; };
-    const onTouchEnd = (e: TouchEvent) => {
-      if (notesBusy.current || cardBusy.current) return;
-      const dy = touchStartY.current - e.changedTouches[0].clientY;
-      if (!showProjectsRef.current) {
-        if (dy > 60) {
           notesBusy.current = true;
           setShowProjects(true);
           showProjectsRef.current = true;
@@ -791,8 +772,62 @@ export default function Home() {
         }
         return;
       }
-      if (dy >  45) goNext();
-      if (dy < -45) goPrev();
+
+      // Projects mode (desktop)
+      if (cardBusy.current) return;
+      if (Date.now() - lastFire.current < 120) return;
+
+      if (delta < 0) {
+        // Scroll up/left → accumulate, then back to notes
+        wheelAccum.current += delta; // delta negative
+        if (wheelAccum.current <= -80) { wheelAccum.current = 0; goBackToNotes(); }
+      } else {
+        // Scroll down/right → next card
+        wheelAccum.current += delta;
+        if (wheelAccum.current >= 80) { wheelAccum.current = 0; goNext(); }
+      }
+    };
+
+    const onTouchStart = (e: TouchEvent) => {
+      touchStartY.current = e.touches[0].clientY;
+      touchStartX.current = e.touches[0].clientX;
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      const dy = touchStartY.current - e.changedTouches[0].clientY; // + = swipe up
+      const dx = touchStartX.current - e.changedTouches[0].clientX; // + = swipe left
+
+      if (isMobileRef.current) {
+        if (!showProjectsRef.current && !notesBusy.current) {
+          if (dy > 60 && Math.abs(dy) > Math.abs(dx)) {
+            notesBusy.current = true;
+            setShowProjects(true);
+            showProjectsRef.current = true;
+            setTimeout(() => { notesBusy.current = false; }, 850);
+          }
+        }
+        return;
+      }
+
+      // Desktop
+      if (notesBusy.current || cardBusy.current) return;
+      if (!showProjectsRef.current) {
+        if (dy > 60 && Math.abs(dy) > Math.abs(dx)) {
+          notesBusy.current = true;
+          setShowProjects(true);
+          showProjectsRef.current = true;
+          setTimeout(() => { notesBusy.current = false; }, 850);
+        }
+        return;
+      }
+      // Projects: horizontal = prev/next, swipe down = back to notes
+      if (Math.abs(dx) >= Math.abs(dy)) {
+        if (dx >  45) goNext();
+        if (dx < -45) goPrev();
+      } else {
+        if (dy < -45) goBackToNotes(); // finger down = back to notes
+        if (dy >  45) goNext();        // finger up   = next
+      }
     };
 
     window.addEventListener("wheel",      onWheel,      { passive: false });
@@ -803,8 +838,9 @@ export default function Home() {
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchend",   onTouchEnd);
     };
-  }, [goNext, goPrev]);
+  }, [goNext, goPrev, goBackToNotes]);
 
+  // ── Detect mobile ──────────────────────────────────────────────────────────
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth <= 640);
     check();
@@ -812,6 +848,7 @@ export default function Home() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
+  // ── Init notes ─────────────────────────────────────────────────────────────
   useEffect(() => {
     const key = isMobile ? "m" : "d";
     if (initKeyRef.current === key) return;
@@ -822,6 +859,7 @@ export default function Home() {
     colorIndexRef.current = 0;
   }, [isMobile, setTopZ]);
 
+  // ── Note actions ───────────────────────────────────────────────────────────
   const bringToFront = useCallback((id: string) => {
     setTopZ(z => {
       const next = z + 1;
@@ -843,33 +881,27 @@ export default function Home() {
       if (!deleted.length) return deleted;
       const ts    = Date.now();
       const baseZ = topZRef.current;
-      const restoredNotes = deleted.map((n, i) => ({
-        ...n,
-        id: `${n.id}-r${ts}-${i}`,
-        zIndex: baseZ + i + 1,
-      }));
+      const restored = deleted.map((n, i) => ({ ...n, id: `${n.id}-r${ts}-${i}`, zIndex: baseZ + i + 1 }));
       const newZ = baseZ + deleted.length;
       topZRef.current = newZ;
       _setTopZ(newZ);
-      setNotes(prev => [...prev, ...restoredNotes]);
+      setNotes(prev => [...prev, ...restored]);
       return [];
     });
   }, []);
 
   const addCard = useCallback((text: string) => {
-    const color          = USER_CARD_COLORS[colorIndexRef.current % USER_CARD_COLORS.length];
+    const color           = USER_CARD_COLORS[colorIndexRef.current % USER_CARD_COLORS.length];
     colorIndexRef.current += 1;
-    const sizing         = isMobile ? { width: 140, minHeight: 140 } : cardSizeFromText(text);
+    const sizing          = isMobile ? { width: 140, minHeight: 140 } : cardSizeFromText(text);
     const { xPct, yPct } = randomSpawnPosition(isMobile);
-    const z              = topZRef.current + 1;
-    topZRef.current      = z;
+    const z               = topZRef.current + 1;
+    topZRef.current       = z;
     _setTopZ(z);
     setNotes(prev => [...prev, {
       id: `user-${Date.now()}`,
-      xPct, yPct,
-      color, width: sizing.width, minHeight: sizing.minHeight,
-      zIndex: z,
-      isUserAdded: true,
+      xPct, yPct, color, width: sizing.width, minHeight: sizing.minHeight,
+      zIndex: z, isUserAdded: true,
       content: (
         <p style={{ ...bodyStyle, fontSize: 12.5, color: color === "#F7F6EF" ? "#333" : "#fff" }}>
           {text}
@@ -879,44 +911,40 @@ export default function Home() {
   }, [isMobile]);
 
   const handleRestart = useCallback(() => {
-    initKeyRef.current    = null;
-    const key             = isMobile ? "m" : "d";
-    initKeyRef.current    = key;
-    const freshNotes      = buildInitialNotes(isMobile);
-    setNotes(freshNotes);
+    const key = isMobile ? "m" : "d";
+    initKeyRef.current = key;
+    setNotes(buildInitialNotes(isMobile));
     setDeletedNotes([]);
-    topZRef.current       = 10;
+    topZRef.current = 10;
     _setTopZ(10);
     colorIndexRef.current = 0;
     setShowProjects(false);
     showProjectsRef.current = false;
-    setTopIdx(0);
-    topIdxRef.current     = 0;
-    setCardPhase("idle");
-    setStagingIdx(null);
-    cardBusy.current      = false;
-    notesBusy.current     = false;
-    wheelAccum.current    = 0;
-    lastFire.current      = 0;
+    setVirtualIdx(0);
+    cardBusy.current   = false;
+    notesBusy.current  = false;
+    wheelAccum.current = 0;
+    lastFire.current   = 0;
   }, [isMobile]);
 
+  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { width: 100%; height: 100%; overflow: hidden; background: #3B5FA0; }
+        .mobile-projects-scroll { overflow-y: auto !important; -webkit-overflow-scrolling: touch; }
         @media (max-width: 640px) {
-          .explore-btn { top: 56px !important; right: 12px !important; }
-          .hint-text   { font-size: 11px !important; bottom: 22px !important; }
+          .explore-btn { top: 52px !important; right: 10px !important; }
+          .hint-text   { font-size: 10px !important; bottom: 18px !important; }
           .nav-logo    { font-size: 12px !important; }
-          .nav-links   { gap: 16px !important; }
-          .nav-link    { font-size: 10px !important; letter-spacing: 0.08em !important; }
-          .project-card { width: 88vw !important; height: 52vw !important; }
+          .nav-links   { gap: 14px !important; }
+          .nav-link    { font-size: 10px !important; letter-spacing: 0.06em !important; }
         }
       `}</style>
 
-      <ProjectsSection topIdx={topIdx} phase={cardPhase} stagingIdx={stagingIdx} />
+      <ProjectsSection virtualIdx={virtualIdx} isMobile={isMobile} onBack={goBackToNotes} />
 
       <NotesSection
         notes={notes}
