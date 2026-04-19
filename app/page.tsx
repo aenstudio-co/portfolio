@@ -32,10 +32,10 @@ const DESKTOP_POSITIONS = [
 ];
 
 const MOBILE_POSITIONS = [
-  { id: "intro",     xPct: 12, yPct: 28, color: "#43669e", width: 250, zIndex: 4 },
-  { id: "quote",     xPct: 26, yPct: 17, color: "#2f812f", width: 275, zIndex: 6 },
-  { id: "education", xPct: 38, yPct: 48, color: "#c06408", width: 225, zIndex: 8 },
-  { id: "red",       xPct: 20, yPct: 57, color: "#b02415", width: 200, zIndex: 5 },
+  { id: "intro",     xPct: 10, yPct: 20, color: "#43669e", width: 250, zIndex: 7 },
+  { id: "quote",     xPct: 26, yPct: 10, color: "#2f812f", width: 275, zIndex: 6 },
+  { id: "education", xPct: 38, yPct: 40, color: "#c06408", width: 225, zIndex: 8 },
+  { id: "red",       xPct: 20, yPct: 50, color: "#b02415", width: 200, zIndex: 5 },
 ];
 
 const PROJECTS = [
