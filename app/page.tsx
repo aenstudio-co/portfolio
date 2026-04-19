@@ -16,6 +16,8 @@ interface Note {
   isUserAdded?: boolean;
 }
 
+type CardPhase = "idle" | "flyingUp" | "staging" | "dropping";
+
 // ─── Static data ──────────────────────────────────────────────────────────────
 const FONT  = "'Courier Prime', 'Courier New', monospace";
 const CFONT = "Consolas, 'Courier New', monospace";
@@ -38,28 +40,33 @@ const MOBILE_POSITIONS = [
 
 const PROJECTS = [
   {
-    id: 0, label: "The Render House",
-    cat: "A curated line of designs that transforms everyday graphics into collectible statements.",
-    handle: "@therenderhouse", year: "2026", status: "In progress",
+    id: 0,
+    label: "The Render House",
+    cat: "An open-source library of designs that transforms everyday graphics into collectible statements.",
+    color: "#E03030",
   },
   {
-    id: 1, label: "Battle of the Wits",
-    cat: "An academic competition bridging the gap between theory and practical application.",
-    handle: "@sirkits", year: "2025", status: "Completed",
+    id: 1,
+    label: "The ABC Archive",
+    cat: "A curated repository where physical objects, digital systems, and visual narratives converge into a continuum of design.",
+    color: "#3B72C8",
   },
   {
-    id: 2, label: "Sirkits Merch",
-    cat: "Official merchandise release for Sirkits, featuring limited edition collectible pieces.",
-    handle: "@sirkits", year: "2025", status: "Completed",
+    id: 2,
+    label: "Konsept",
+    cat: "A design tool quick and easy visualization. Designed for creators of all kinds, it allows you to transform any idea into a clear sketch in just minutes.",
+    color: "#E03030",
   },
   {
-    id: 3, label: "Bytecamp 3.0",
-    cat: "A flagship tech bootcamp connecting aspiring developers with industry mentors.",
-    handle: "@bytecamp", year: "2024", status: "Completed",
+    id: 3,
+    label: "Rural Sidewalks",
+    cat: "An interactive map for Filipino artisans and their crafts. A travel diary around Philippine provinces.",
+    color: "#3B72C8",
   },
 ];
 
 const N = PROJECTS.length;
+const ANIM = 520; // ms — card animation duration
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 const titleStyle: React.CSSProperties = {
@@ -92,7 +99,7 @@ function buildInitialNotes(isMobile: boolean): Note[] {
       ...P[0],
       content: (
         <div>
-          <p style={titleStyle}>Hi! I'm Kris :)</p>
+          <p style={titleStyle}>Hi! I&apos;m Kris :)</p>
           <p style={bodyStyle}>
             Working at the intersection of digital and physical culture, I explore
             technology as a space for creative expression.
@@ -122,9 +129,7 @@ function buildInitialNotes(isMobile: boolean): Note[] {
 
 // ─── DraggableNote ────────────────────────────────────────────────────────────
 function DraggableNote({
-  note,
-  onBringToFront,
-  onClose,
+  note, onBringToFront, onClose,
 }: {
   note: Note;
   onBringToFront: (id: string) => void;
@@ -141,8 +146,8 @@ function DraggableNote({
     const rect   = el.getBoundingClientRect();
     const curX   = rect.left - parent.left;
     const curY   = rect.top  - parent.top;
-    el.style.left = curX + "px";
-    el.style.top  = curY + "px";
+    el.style.left    = curX + "px";
+    el.style.top     = curY + "px";
     offset.current   = { x: clientX - curX, y: clientY - curY };
     dragging.current = true;
     onBringToFront(note.id);
@@ -264,219 +269,214 @@ function NotesSection({
   );
 }
 
+// ─── ProjectCard ──────────────────────────────────────────────────────────────
+// Simplified card: only label, description, and a VIEW circle.
+// Uses 3-D perspective on the wrapper so transform: rotateX(...) looks like
+// a real card flip.
+function ProjectCard({
+  project, style,
+}: {
+  project: typeof PROJECTS[number];
+  style: React.CSSProperties;
+}) {
+  return (
+    <div style={style}>
+      {/* Actual card face */}
+      <div style={{
+        width: "100%", height: "100%",
+        borderRadius: 14,
+        background: "#fff",
+        boxShadow: "0 24px 72px rgba(0,0,0,0.28)",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+      }}>
+        {/* Image area */}
+        <div style={{
+          flex: 1,
+          background: "#e8e8e6",
+          borderRadius: "14px 14px 0 0",
+          position: "relative",
+        }} />
+
+        {/* Info strip */}
+        <div style={{
+          padding: "20px 24px 22px",
+          borderTop: "1px solid #eaeaea",
+          background: "#fff",
+          display: "flex",
+          alignItems: "flex-end",
+          justifyContent: "space-between",
+          gap: 20,
+        }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{
+              fontFamily: CFONT, fontSize: 16, color: "#111",
+              letterSpacing: "0.05em", textTransform: "uppercase",
+              marginBottom: 6,
+              whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+            }}>
+              {project.label}
+            </p>
+            <p style={{
+              fontFamily: CFONT, fontSize: 12, color: "#777",
+              lineHeight: 1.6,
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }}>
+              {project.cat}
+            </p>
+          </div>
+
+          {/* VIEW circle */}
+          <div style={{
+            flexShrink: 0,
+            width: 52, height: 52,
+            borderRadius: "50%",
+            background: project.color,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            cursor: "pointer",
+          }}>
+            <span style={{
+              fontFamily: CFONT, fontSize: 10,
+              color: "#fff", letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              userSelect: "none",
+            }}>VIEW</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── ProjectsSection ──────────────────────────────────────────────────────────
+// Pure display — no event listeners. Parent owns all scroll input.
+// Stack layout: 3 cards visible.
+//   slot 0 = top card (full size, center)
+//   slot 1 = peeking slightly below + smaller
+//   slot 2 = peeking further below + even smaller
 //
-// STATE MACHINE:
-//   phase "idle"     — cards resting in stack, no animation
-//   phase "flyingUp" — topIdx card is CSS-transitioning off-screen upward
-//   phase "staging"  — entering card rendered off-screen, no transition yet (1 rAF)
-//   phase "dropping" — entering card CSS-transitioning down into top slot
+// ANIMATION DETAILS:
+//   flyingUp  → top card arcs up and away with a slight rotateX tilt (like
+//               flipping a real card off the top of a deck)
+//   staging   → incoming card placed ABOVE viewport (translateY -120vh),
+//               no transition — just a position set
+//   dropping  → incoming card smoothly eases down into slot-0 resting position
+//               with a slight overshoot bounce via spring-style cubic-bezier
+//   while any animation plays, existing stack cards smoothly reposition
 //
-// WHEEL LOCK: `busy` ref is true during any animation.
-//   Wheel accumulator is also reset on each trigger.
-//   `{ passive: false }` + preventDefault prevents browser from bubbling
-//   the same wheel event to the notes-section listener.
-//
-type Phase = "idle" | "flyingUp" | "staging" | "dropping";
-
-function ProjectsSection({ onScrollBack }: { onScrollBack: () => void }) {
-  const [topIdx,    setTopIdx]    = useState(0);
-  const [phase,     setPhase]     = useState<Phase>("idle");
-  // stagingIdx: the project index being staged/dropped in (prev card entering)
-  const [stagingIdx, setStagingIdx] = useState<number | null>(null);
-
-  const busy        = useRef(false);
-  const wheelAccum  = useRef(0);
-  const lastFire    = useRef(0);
-  const touchStartY = useRef(0);
-
-  const ANIM = 440;
-
-  const goNext = useCallback(() => {
-    if (busy.current) return;
-    busy.current = true;
-    wheelAccum.current = 0;
-
-    // Start fly-up animation on the top card
-    setPhase("flyingUp");
-
-    setTimeout(() => {
-      // Animation done — advance topIdx, snap back to idle
-      setTopIdx(i => (i + 1) % N);
-      setPhase("idle");
-      busy.current = false;
-    }, ANIM);
-  }, []);
-
-  const goPrev = useCallback(() => {
-    if (busy.current) return;
-    if (topIdx === 0) { onScrollBack(); return; }
-
-    busy.current = true;
-    wheelAccum.current = 0;
-
-    const incoming = (topIdx - 1 + N) % N;
-    setStagingIdx(incoming);
-
-    // Phase 1: "staging" — render the card above viewport, no transition
-    setPhase("staging");
-
-    // Two rAFs: first ensures the DOM has painted the off-screen card,
-    // second triggers the CSS transition to drop it in.
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        // Now advance topIdx and switch to "dropping" so the card transitions in
-        setTopIdx(incoming);
-        setPhase("dropping");
-
-        setTimeout(() => {
-          setPhase("idle");
-          setStagingIdx(null);
-          busy.current = false;
-        }, ANIM);
-      });
-    });
-  }, [topIdx, onScrollBack]);
-
-  // Single wheel handler — attached non-passively so we can preventDefault.
-  // This stops the wheel event reaching the notes-section passive listener.
-  useEffect(() => {
-    const onWheel = (e: WheelEvent) => {
-      e.preventDefault(); // block notes-section from also receiving this
-      if (busy.current) return;
-
-      const now = Date.now();
-      if (now - lastFire.current < 100) {
-        // Within debounce window — still accumulate but don't fire
-        wheelAccum.current += e.deltaY;
-        return;
-      }
-
-      wheelAccum.current += e.deltaY;
-
-      if (wheelAccum.current > 80) {
-        lastFire.current   = now;
-        wheelAccum.current = 0;
-        goNext();
-      } else if (wheelAccum.current < -80) {
-        lastFire.current   = now;
-        wheelAccum.current = 0;
-        goPrev();
-      }
-    };
-
-    const onTouchStart = (e: TouchEvent) => {
-      touchStartY.current = e.touches[0].clientY;
-    };
-    const onTouchEnd = (e: TouchEvent) => {
-      if (busy.current) return;
-      const dy = touchStartY.current - e.changedTouches[0].clientY;
-      if (dy >  45) goNext();
-      if (dy < -45) goPrev();
-    };
-
-    window.addEventListener("wheel",      onWheel,      { passive: false });
-    window.addEventListener("touchstart", onTouchStart, { passive: true  });
-    window.addEventListener("touchend",   onTouchEnd,   { passive: true  });
-    return () => {
-      window.removeEventListener("wheel",      onWheel);
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchend",   onTouchEnd);
-    };
-  }, [goNext, goPrev]);
-
-  // Build 3-slot visible stack: slot 0 = top, 1 = second, 2 = third
-  const slots = [0, 1, 2].map(offset => (topIdx + offset) % N);
-
-  // The card being staged: rendered above viewport before it drops in
-  // It should be rendered at slot 0 position during staging/dropping
+function ProjectsSection({
+  topIdx, phase, stagingIdx,
+}: {
+  topIdx: number;
+  phase: CardPhase;
+  stagingIdx: number | null;
+}) {
+  // 3-slot stack
+  const slots = [0, 1, 2].map(o => (topIdx + o) % N);
   const showStaging = (phase === "staging" || phase === "dropping") && stagingIdx !== null;
+
+  // Resting position for a given slot
+  const restingTransform = (slot: number) => {
+    const peekY     = slot * 22;
+    const peekScale = 1 - slot * 0.038;
+    return `translateX(-50%) translateY(calc(-50% + ${peekY}px)) scale(${peekScale})`;
+  };
 
   return (
     <div style={{
       position: "fixed", inset: 0, zIndex: 150,
       background: "#3B5FA0",
-      display: "flex", alignItems: "center", justifyContent: "center",
       overflow: "hidden",
+      // Perspective on the container makes rotateX look like a real 3-D flip
+      perspective: "1200px",
+      perspectiveOrigin: "50% 50%",
     }}>
       {/* Dot grid */}
       <div style={{
         position: "absolute", inset: 0,
-        backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1.3px)",
+        backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.25) 1px, transparent 1.3px)",
         backgroundSize: "18px 18px", backgroundPosition: "13px 13px",
         pointerEvents: "none",
       }} />
 
-      {/*
-        Render back-to-front: slot 2 painted first, slot 0 last (on top).
-        During flyingUp: slot 0 card animates off-screen.
-        During staging:  stagingIdx card rendered above viewport (no transition).
-        During dropping: stagingIdx card transitions into slot 0 position.
-      */}
+      {/* Render back → front */}
       {[...slots].reverse().map((projectIdx, ri) => {
-        const slot = slots.length - 1 - ri; // 0 = top, 1 = mid, 2 = bottom
+        const slot      = slots.length - 1 - ri;   // 0 = top
+        const isTop     = slot === 0;
+        const isFlyingUp = phase === "flyingUp" && isTop;
 
-        const peekY     = slot * 20;
-        const peekScale = 1 - slot * 0.04;
-
-        const isTopSlot = slot === 0;
-        const isFlyingUp = phase === "flyingUp" && isTopSlot;
-
-        // During staging/dropping, the topIdx card moves to slot 1 visually —
-        // but the stagingIdx card will be overlaid on top in a separate element.
-        // So when we're in staging/dropping, treat this card as if it's in slot+1.
-        const effectiveSlot = showStaging && !isFlyingUp
-          ? slot + 1   // push everything down one while incoming card occupies slot 0
-          : slot;
-
-        const effectivePeekY     = effectiveSlot * 20;
-        const effectivePeekScale = 1 - effectiveSlot * 0.04;
+        // While a card enters from above, push stack cards visually down one slot
+        const effectiveSlot = showStaging && !isFlyingUp ? slot + 1 : slot;
 
         let transform:  string;
         let transition: string;
+        let opacity     = 1;
 
         if (isFlyingUp) {
-          transform  = `translate(-50%, calc(-50% - 120vh)) scale(1)`;
-          transition = `transform ${ANIM}ms cubic-bezier(0.55, 0, 1, 0.75)`;
+          // Arc up: translate up off screen + tilt back (rotateX) like lifting a card
+          transform  = `translateX(-50%) translateY(calc(-50% - 115vh)) rotateX(-25deg) scale(1.02)`;
+          transition = `transform ${ANIM}ms cubic-bezier(0.4, 0, 1, 1)`;
         } else {
-          transform  = `translate(-50%, calc(-50% + ${effectivePeekY}px)) scale(${effectivePeekScale})`;
-          transition = (phase !== "idle")
-            ? `transform ${ANIM}ms cubic-bezier(0.25, 1, 0.5, 1)`
-            : `transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)`;
+          transform  = restingTransform(effectiveSlot);
+          // Fade out cards pushed beyond slot 2
+          if (effectiveSlot > 2) opacity = 0;
+          transition = phase !== "idle"
+            ? `transform ${ANIM}ms cubic-bezier(0.32, 1.2, 0.5, 1), opacity 0.2s ease`
+            : `transform 0.35s cubic-bezier(0.32, 1, 0.5, 1), opacity 0.2s ease`;
         }
 
         return (
           <ProjectCard
             key={projectIdx}
             project={PROJECTS[projectIdx]}
-            transform={transform}
-            transition={transition}
-            zIndex={10 - slot}
-            isTopSlot={isTopSlot}
+            style={{
+              position: "absolute",
+              top: "50%", left: "50%",
+              width: "min(700px, 74vw)",
+              height: "calc(100vh - 190px)",
+              transform,
+              transition,
+              opacity,
+              zIndex: 10 - slot,
+              willChange: "transform, opacity",
+              // propagate perspective from parent
+              transformStyle: "preserve-3d",
+            }}
           />
         );
       })}
 
-      {/* Staging / dropping card — overlaid on top of the stack */}
+      {/* Staging / dropping overlay card */}
       {showStaging && stagingIdx !== null && (() => {
         const isStaging  = phase === "staging";
-        const isDropping = phase === "dropping";
-        // Staging: above viewport, no transition
-        // Dropping: animate into slot-0 resting position
-        const transform = isStaging
-          ? `translate(-50%, calc(-50% - 120vh)) scale(1)`
-          : `translate(-50%, calc(-50% + 0px)) scale(1)`;
+        // staging:  above viewport, no transition, slight tilt as if it was
+        //           just dealt from above
+        // dropping: eases down with a spring overshoot
+        const transform  = isStaging
+          ? `translateX(-50%) translateY(calc(-50% - 115vh)) rotateX(20deg) scale(1.02)`
+          : restingTransform(0);
         const transition = isStaging
           ? "none"
-          : `transform ${ANIM}ms cubic-bezier(0.25, 1, 0.5, 1)`;
+          : `transform ${ANIM}ms cubic-bezier(0.22, 1.4, 0.36, 1)`;
         return (
           <ProjectCard
             key={`staging-${stagingIdx}`}
             project={PROJECTS[stagingIdx]}
-            transform={transform}
-            transition={transition}
-            zIndex={20}
-            isTopSlot={isDropping}
+            style={{
+              position: "absolute",
+              top: "50%", left: "50%",
+              width: "min(700px, 74vw)",
+              height: "calc(100vh - 190px)",
+              transform,
+              transition,
+              zIndex: 20,
+              willChange: "transform",
+              transformStyle: "preserve-3d",
+            }}
           />
         );
       })()}
@@ -486,7 +486,7 @@ function ProjectsSection({ onScrollBack }: { onScrollBack: () => void }) {
         position: "absolute", bottom: 22, left: "50%",
         transform: "translateX(-50%)",
         fontFamily: CFONT, fontSize: 11,
-        color: "rgba(255,255,255,0.55)",
+        color: "rgba(255,255,255,0.50)",
         letterSpacing: "0.14em", zIndex: 30,
         whiteSpace: "nowrap",
       }}>
@@ -508,88 +508,6 @@ function ProjectsSection({ onScrollBack }: { onScrollBack: () => void }) {
             transition: "height 0.3s ease, background 0.3s ease",
           }} />
         ))}
-      </div>
-    </div>
-  );
-}
-
-// ─── ProjectCard ──────────────────────────────────────────────────────────────
-function ProjectCard({
-  project, transform, transition, zIndex, isTopSlot,
-}: {
-  project: typeof PROJECTS[number];
-  transform: string;
-  transition: string;
-  zIndex: number;
-  isTopSlot: boolean;
-}) {
-  return (
-    <div style={{
-      position: "absolute",
-      top: "50%", left: "50%",
-      width: "min(720px, 76vw)",
-      height: "calc(100vh - 180px)",
-      borderRadius: 14,
-      background: "#fff",
-      boxShadow: isTopSlot
-        ? "0 22px 64px rgba(0,0,0,0.30)"
-        : "0 8px 24px rgba(0,0,0,0.16)",
-      transform,
-      transition,
-      zIndex,
-      display: "flex",
-      flexDirection: "column",
-      overflow: "hidden",
-      willChange: "transform",
-    }}>
-      {/* Grey image placeholder */}
-      <div style={{
-        flex: 1, background: "#e8e8e6",
-        borderRadius: "14px 14px 0 0",
-      }} />
-
-      {/* Info strip */}
-      <div style={{
-        padding: "14px 22px 18px",
-        borderTop: "1px solid #eaeaea",
-        background: "#fff",
-      }}>
-        <div style={{ display: "flex", gap: 20, marginBottom: 8 }}>
-          <p style={{
-            flex: 1, fontFamily: CFONT,
-            fontSize: 12.5, color: "#555", lineHeight: 1.65,
-          }}>
-            {project.cat}
-          </p>
-          <div style={{ textAlign: "right", flexShrink: 0 }}>
-            <p style={{ fontFamily: CFONT, fontSize: 12.5, color: "#aaa" }}>
-              {project.year}
-            </p>
-            <div style={{
-              height: 1, background: "#e0e0e0",
-              margin: "5px 0", width: 160,
-            }} />
-          </div>
-        </div>
-        <div style={{
-          display: "flex", alignItems: "center",
-          justifyContent: "space-between",
-        }}>
-          <p style={{
-            fontFamily: CFONT, fontSize: 16, color: "#111",
-            letterSpacing: "0.05em", textTransform: "uppercase",
-          }}>
-            {project.label}
-          </p>
-          <div style={{ display: "flex", gap: 16 }}>
-            <p style={{ fontFamily: CFONT, fontSize: 12, color: "#aaa" }}>
-              {project.handle}
-            </p>
-            <p style={{ fontFamily: CFONT, fontSize: 12, color: "#aaa" }}>
-              [{project.status}]
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   );
@@ -659,14 +577,9 @@ function ExploreButton({
         transition: "opacity 0.16s ease, transform 0.16s ease",
         zIndex: 601,
       }}>
-        {/* Restore */}
         <button
           onClick={() => { if (!deletedCount) return; setOpen(false); onRestoreCards(); }}
-          style={{
-            ...rowBtn,
-            cursor: deletedCount > 0 ? "pointer" : "default",
-            color:  deletedCount > 0 ? "#111" : "#ccc",
-          }}
+          style={{ ...rowBtn, cursor: deletedCount > 0 ? "pointer" : "default", color: deletedCount > 0 ? "#111" : "#ccc" }}
           onMouseEnter={e => { if (deletedCount > 0) (e.currentTarget as HTMLElement).style.background = "#f3f3f1"; }}
           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
         >
@@ -674,8 +587,7 @@ function ExploreButton({
           Restore Cards
           {deletedCount > 0 && (
             <span style={{
-              marginLeft: "auto",
-              background: "#3B72C8", color: "#fff",
+              marginLeft: "auto", background: "#3B72C8", color: "#fff",
               borderRadius: "50%", width: 16, height: 16,
               display: "flex", alignItems: "center", justifyContent: "center",
               fontSize: 10, flexShrink: 0,
@@ -713,21 +625,12 @@ function ExploreButton({
                 padding: "6px 8px", outline: "none", lineHeight: 1.6,
               }}
             />
-            <div style={{
-              display: "flex", alignItems: "center",
-              justifyContent: "space-between", marginTop: 6,
-            }}>
-              <span style={{ fontFamily: FONT, fontSize: 10, color: "#aaa" }}>
-                {text.length}/100
-              </span>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 6 }}>
+              <span style={{ fontFamily: FONT, fontSize: 10, color: "#aaa" }}>{text.length}/100</span>
               <div style={{ display: "flex", gap: 6 }}>
                 <button
                   onClick={() => { setAddMode(false); setText(""); }}
-                  style={{
-                    fontFamily: FONT, fontSize: 11, color: "#999",
-                    background: "none", border: "none",
-                    cursor: "pointer", textTransform: "uppercase",
-                  }}
+                  style={{ fontFamily: FONT, fontSize: 11, color: "#999", background: "none", border: "none", cursor: "pointer", textTransform: "uppercase" }}
                 >Cancel</button>
                 <button
                   onClick={handleAdd}
@@ -766,12 +669,161 @@ export default function Home() {
   const [isMobile,     setIsMobile]     = useState(false);
   const [notes,        setNotes]        = useState<Note[]>([]);
   const [deletedNotes, setDeletedNotes] = useState<Note[]>([]);
-  const [topZ,         setTopZ]         = useState(10);
   const [showProjects, setShowProjects] = useState(false);
 
+  // Card state — lifted here so the single wheel handler can drive it
+  const [topIdx,     setTopIdx]     = useState(0);
+  const [cardPhase,  setCardPhase]  = useState<CardPhase>("idle");
+  const [stagingIdx, setStagingIdx] = useState<number | null>(null);
+
   const colorIndexRef = useRef(0);
-  const wheelAccum    = useRef(0);
   const initKeyRef    = useRef<string | null>(null);
+
+  // ── topZ as a ref so restoreCards can read it without stale closures ────────
+  // We still keep a state version for rendering, but mutations go through the ref.
+  const topZRef             = useRef(10);
+  const [topZ, _setTopZ]    = useState(10);
+  const setTopZ = useCallback((v: number | ((prev: number) => number)) => {
+    _setTopZ(prev => {
+      const next = typeof v === "function" ? v(prev) : v;
+      topZRef.current = next;
+      return next;
+    });
+  }, []);
+
+  // Refs always in sync with state — the wheel handler reads these (never stale)
+  const showProjectsRef = useRef(false);
+  const topIdxRef       = useRef(0);
+  const cardBusy        = useRef(false);
+  const notesBusy       = useRef(false);
+  const wheelAccum      = useRef(0);
+  const lastFire        = useRef(0);
+  const touchStartY     = useRef(0);
+
+  useEffect(() => { showProjectsRef.current = showProjects; }, [showProjects]);
+  useEffect(() => { topIdxRef.current = topIdx; }, [topIdx]);
+
+  // ── Card actions ───────────────────────────────────────────────────────────
+  const goNext = useCallback(() => {
+    cardBusy.current = true;
+    wheelAccum.current = 0;
+    lastFire.current = Date.now();
+    setCardPhase("flyingUp");
+    setTimeout(() => {
+      setTopIdx(i => {
+        const next = (i + 1) % N;
+        topIdxRef.current = next;
+        return next;
+      });
+      setCardPhase("idle");
+      cardBusy.current = false;
+    }, ANIM);
+  }, []);
+
+  const goPrev = useCallback(() => {
+    const cur = topIdxRef.current;
+    if (cur === 0) {
+      notesBusy.current = true;
+      wheelAccum.current = 0;
+      setShowProjects(false);
+      showProjectsRef.current = false;
+      setTimeout(() => { notesBusy.current = false; }, 850);
+      return;
+    }
+    cardBusy.current = true;
+    wheelAccum.current = 0;
+    lastFire.current = Date.now();
+    const incoming = (cur - 1 + N) % N;
+    setStagingIdx(incoming);
+    setCardPhase("staging");
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setTopIdx(incoming);
+        topIdxRef.current = incoming;
+        setCardPhase("dropping");
+        setTimeout(() => {
+          setCardPhase("idle");
+          setStagingIdx(null);
+          cardBusy.current = false;
+        }, ANIM);
+      });
+    });
+  }, []);
+
+  // ── Single global input router ─────────────────────────────────────────────
+  // ONE listener, { passive: false }, preventDefault on every wheel event.
+  // goNext / goPrev are stable (no deps) so this effect runs exactly once.
+  useEffect(() => {
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+
+      // Hard gate — if anything is animating, ignore the event completely.
+      // Do NOT accumulate during animation — that's what causes the double-fire.
+      if (notesBusy.current || cardBusy.current) return;
+
+      if (!showProjectsRef.current) {
+        // Notes mode: require enough downward scroll to transition
+        if (e.deltaY <= 0) {
+          // Upward scroll in notes mode — decay accumulator
+          wheelAccum.current = Math.max(0, wheelAccum.current - 20);
+          return;
+        }
+        wheelAccum.current += e.deltaY;
+        if (wheelAccum.current > 120) {
+          wheelAccum.current = 0;
+          notesBusy.current  = true;
+          setShowProjects(true);
+          showProjectsRef.current = true;
+          setTimeout(() => { notesBusy.current = false; }, 850);
+        }
+        return;
+      }
+
+      // Projects mode: minimum time between advances (extra protection for
+      // high-frequency trackpads even after the busy gate)
+      const now = Date.now();
+      if (now - lastFire.current < 120) return; // skip but don't accumulate
+
+      wheelAccum.current += e.deltaY;
+
+      if (wheelAccum.current >= 80) {
+        wheelAccum.current = 0;
+        goNext();
+      } else if (wheelAccum.current <= -80) {
+        wheelAccum.current = 0;
+        goPrev();
+      }
+    };
+
+    const onTouchStart = (e: TouchEvent) => {
+      touchStartY.current = e.touches[0].clientY;
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      if (notesBusy.current || cardBusy.current) return;
+      const dy = touchStartY.current - e.changedTouches[0].clientY;
+      if (!showProjectsRef.current) {
+        if (dy > 60) {
+          notesBusy.current = true;
+          setShowProjects(true);
+          showProjectsRef.current = true;
+          setTimeout(() => { notesBusy.current = false; }, 850);
+        }
+        return;
+      }
+      if (dy >  45) goNext();
+      if (dy < -45) goPrev();
+    };
+
+    window.addEventListener("wheel",      onWheel,      { passive: false });
+    window.addEventListener("touchstart", onTouchStart, { passive: true  });
+    window.addEventListener("touchend",   onTouchEnd,   { passive: true  });
+    return () => {
+      window.removeEventListener("wheel",      onWheel);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchend",   onTouchEnd);
+    };
+  }, [goNext, goPrev]);
 
   // ── Detect mobile ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -781,7 +833,7 @@ export default function Home() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // ── Init notes — guarded so StrictMode double-invoke doesn't duplicate ─────
+  // ── Init notes ─────────────────────────────────────────────────────────────
   useEffect(() => {
     const key = isMobile ? "m" : "d";
     if (initKeyRef.current === key) return;
@@ -790,33 +842,7 @@ export default function Home() {
     setDeletedNotes([]);
     setTopZ(10);
     colorIndexRef.current = 0;
-  }, [isMobile]);
-
-  // ── Notes → projects scroll ────────────────────────────────────────────────
-  // Uses passive:true so it doesn't conflict with projects' non-passive listener.
-  // The notes section is translateY(-100%) when showProjects, so its wheel
-  // listener is removed at that point anyway.
-  useEffect(() => {
-    if (showProjects) return;
-    const onWheel = (e: WheelEvent) => {
-      wheelAccum.current += e.deltaY;
-      if (wheelAccum.current > 120) { setShowProjects(true); wheelAccum.current = 0; }
-      if (e.deltaY < 0) wheelAccum.current = Math.max(0, wheelAccum.current - 20);
-    };
-    let tsy = 0;
-    const onTouchStart = (e: TouchEvent) => { tsy = e.touches[0].clientY; };
-    const onTouchEnd   = (e: TouchEvent) => {
-      if (tsy - e.changedTouches[0].clientY > 60) setShowProjects(true);
-    };
-    window.addEventListener("wheel",      onWheel,      { passive: true });
-    window.addEventListener("touchstart", onTouchStart, { passive: true });
-    window.addEventListener("touchend",   onTouchEnd,   { passive: true });
-    return () => {
-      window.removeEventListener("wheel",      onWheel);
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchend",   onTouchEnd);
-    };
-  }, [showProjects]);
+  }, [isMobile, setTopZ]);
 
   // ── Note actions ───────────────────────────────────────────────────────────
   const bringToFront = useCallback((id: string) => {
@@ -825,7 +851,7 @@ export default function Home() {
       setNotes(prev => prev.map(n => n.id === id ? { ...n, zIndex: next } : n));
       return next;
     });
-  }, []);
+  }, [setTopZ]);
 
   const closeNote = useCallback((id: string) => {
     setNotes(prev => {
@@ -835,62 +861,68 @@ export default function Home() {
     });
   }, []);
 
-  // FIX: All state reads are inside functional updaters — no stale closure.
-  // setDeletedNotes updater receives current deleted list, passes it to setNotes.
-  // setTopZ updater fires after, with new z values. No nested setState calls.
+  // FIX: restoreCards reads topZRef directly (always current) — no stale closure,
+  // no nested setState, no functional-updater chain that React might not batch correctly.
   const restoreCards = useCallback(() => {
     setDeletedNotes(deleted => {
-      if (!deleted.length) return deleted; // nothing to restore
-      const ts = Date.now();
-      // We need current topZ, but we can't read it here.
-      // Solution: use a functional update chain — setTopZ gives us current z.
-      setTopZ(z => {
-        setNotes(prev => [
-          ...prev,
-          ...deleted.map((n, i) => ({
-            ...n,
-            id: `${n.id}-r${ts}-${i}`, // guaranteed unique key
-            zIndex: z + i + 1,
-          })),
-        ]);
-        return z + deleted.length;
-      });
-      return []; // clear the deleted list
+      if (!deleted.length) return deleted;
+      const ts    = Date.now();
+      const baseZ = topZRef.current;          // read from ref — always current
+      const restoredNotes = deleted.map((n, i) => ({
+        ...n,
+        id: `${n.id}-r${ts}-${i}`,
+        zIndex: baseZ + i + 1,
+      }));
+      const newZ = baseZ + deleted.length;
+      topZRef.current = newZ;
+      _setTopZ(newZ);                         // sync state for renders
+      setNotes(prev => [...prev, ...restoredNotes]);
+      return [];                              // clear deleted
     });
-  }, []); // zero deps — all reads via functional updaters
+  }, []); // zero deps — reads only refs and stable setters
 
   const addCard = useCallback((text: string) => {
-    const color = USER_CARD_COLORS[colorIndexRef.current % USER_CARD_COLORS.length];
+    const color          = USER_CARD_COLORS[colorIndexRef.current % USER_CARD_COLORS.length];
     colorIndexRef.current += 1;
-    const sizing        = isMobile ? { width: 140, minHeight: 140 } : cardSizeFromText(text);
+    const sizing         = isMobile ? { width: 140, minHeight: 140 } : cardSizeFromText(text);
     const { xPct, yPct } = randomSpawnPosition(isMobile);
-    setTopZ(z => {
-      setNotes(prev => [...prev, {
-        id: `user-${Date.now()}`,
-        xPct, yPct,
-        color, width: sizing.width, minHeight: sizing.minHeight,
-        zIndex: z + 1,
-        isUserAdded: true,
-        content: (
-          <p style={{
-            ...bodyStyle, fontSize: 12.5,
-            color: color === "#F7F6EF" ? "#333" : "#fff",
-          }}>{text}</p>
-        ),
-      }]);
-      return z + 1;
-    });
+    const z              = topZRef.current + 1;
+    topZRef.current      = z;
+    _setTopZ(z);
+    setNotes(prev => [...prev, {
+      id: `user-${Date.now()}`,
+      xPct, yPct,
+      color, width: sizing.width, minHeight: sizing.minHeight,
+      zIndex: z,
+      isUserAdded: true,
+      content: (
+        <p style={{ ...bodyStyle, fontSize: 12.5, color: color === "#F7F6EF" ? "#333" : "#fff" }}>
+          {text}
+        </p>
+      ),
+    }]);
   }, [isMobile]);
 
   const handleRestart = useCallback(() => {
-    initKeyRef.current = null;
-    const key = isMobile ? "m" : "d";
-    initKeyRef.current = key;
-    setNotes(buildInitialNotes(isMobile));
+    initKeyRef.current    = null;
+    const key             = isMobile ? "m" : "d";
+    initKeyRef.current    = key;
+    const freshNotes      = buildInitialNotes(isMobile);
+    setNotes(freshNotes);
     setDeletedNotes([]);
-    setTopZ(10);
+    topZRef.current       = 10;
+    _setTopZ(10);
     colorIndexRef.current = 0;
     setShowProjects(false);
+    showProjectsRef.current = false;
+    setTopIdx(0);
+    topIdxRef.current     = 0;
+    setCardPhase("idle");
+    setStagingIdx(null);
+    cardBusy.current      = false;
+    notesBusy.current     = false;
+    wheelAccum.current    = 0;
+    lastFire.current      = 0;
   }, [isMobile]);
 
   // ── Render ─────────────────────────────────────────────────────────────────
@@ -909,7 +941,7 @@ export default function Home() {
         }
       `}</style>
 
-      <ProjectsSection onScrollBack={() => setShowProjects(false)} />
+      <ProjectsSection topIdx={topIdx} phase={cardPhase} stagingIdx={stagingIdx} />
 
       <NotesSection
         notes={notes}
