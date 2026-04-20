@@ -6,9 +6,6 @@ import Image from "next/image";
 
 /* ─────────────────────────────────────────────────────────────────────────
    CARD DATA
-   To add an image: set img to the path of your .webp file.
-   Example: img: "/work/project-01.webp"
-   Leave img undefined (or "") to show the placeholder color block.
 ───────────────────────────────────────────────────────────────────────── */
 interface CardDef {
   id: number;
@@ -17,12 +14,12 @@ interface CardDef {
   img?: string;
   w: number;
   h: number;
-  x?: number;   // optional pixel nudge from grid position (positive = right)
-  y?: number;   // optional pixel nudge from grid position (positive = down)
+  x?: number;
+  y?: number;
 }
 
 const CARDS: CardDef[] = [
-  { id:  1, label: "Presentation", cat: "Creatives Committee Onboarding Session", w: 360, h: 202, x: -100, y: -100, img: "/work/presentation-1.webp" },
+  { id:  1, label: "Presentation", cat: "Creatives Committee Onboarding Session", w: 360, h: 202, x: -100, y: -50, img: "/work/presentation-1.webp" },
   { id:  2, label: "Publicity Material", cat: "Battle of the Wits", w: 260, h: 260, x: 0, y: 25, img: "/work/post-1.webp"},
   { id:  3, label: "Publicity Material", cat: "Sirkits Merch Release", w: 260, h: 260, x: 0, y: -25, img: undefined},
   { id:  4, label: "Publicity Material", cat: "Bytecamp 3.0", w: 270, h: 337, x: 0, y: 0, img: "/work/post-3.webp" },
@@ -31,7 +28,7 @@ const CARDS: CardDef[] = [
   { id:  7, label: "Illustration", cat: "Clip Studio Paint", w: 360, h: 277, x: -80, y: -85, img: "/work/paint-1.webp" },
   { id:  8, label: "Project 08", cat: "Branding", w: 240, h: 252, x: 0, y: 0, img: undefined },
   { id:  9, label: "Project 09", cat: "UI      ", w: 192, h: 264, x: 0, y: 0, img: undefined },
-  { id: 10, label: "Project 10", cat: "Motion  ", w: 357, h: 192, x: 0, y: 75, img: "/work/prototype-1.webp" },
+  { id: 10, label: "Project 10", cat: "Motion  ", w: 357, h: 192, x: -100, y: 75, img: "/work/prototype-1.webp" },
   { id: 11, label: "Project 11", cat: "Product ", w: 180, h: 240, x: 0, y: 0, img: undefined },
   { id: 12, label: "Project 12", cat: "Poster  ", w: 216, h: 168, x: 0, y: 0, img: undefined },
   { id: 13, label: "Project 13", cat: "Branding", w: 260, h: 260, x: 0, y: 0, img: "/work/post-2.webp" },
@@ -55,13 +52,13 @@ const CARDS: CardDef[] = [
 ];
 
 /* ─────────────────────────────────────────────────────────────────────────
-   LAYOUT CONFIG — tweak these values to adjust spacing and world size
+   LAYOUT CONFIG
 ───────────────────────────────────────────────────────────────────────── */
 const LAYOUT = {
   COLS: 6,
   ROWS: 5,
-  CELL_W: 340,   // tighter — fits ~5 cards across a 1920px screen
-  CELL_H: 320,   // tighter vertically too
+  CELL_W: 340,
+  CELL_H: 320,
   MAX_CARD_W: 280,
   MAX_CARD_H: 280,
   WRAP_BUFFER: 400,
@@ -97,7 +94,6 @@ const styles = {
     height: 2, background: "#3B72C8", zIndex: 200, pointerEvents: "none",
   } as React.CSSProperties,
 
-  // Matches main page navStyle exactly
   nav: {
     position: "absolute", top: 0, left: 0, right: 0,
     height: 43,
@@ -124,6 +120,7 @@ const styles = {
     backgroundColor: "#fff", borderRadius: 2,
     boxShadow: "2px 3px 4px rgba(0,0,0,0.1)",
     pointerEvents: "auto", userSelect: "none", willChange: "transform", zIndex: 10,
+    transformOrigin: "top left", // Important for scaling properly
   } as React.CSSProperties,
 
   badge: {
@@ -160,14 +157,28 @@ export default function Playground() {
   const [hoveredLabel, setHoveredLabel] = useState<string | null>(null);
   const bgRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const panOffset = useRef({ x: 0, y: 0 });
+  
+  // Animation state refs
+  const panOffset = useRef({ x: 0, y: 0 }); // Current visually rendered position
+  const targetOffset = useRef({ x: 0, y: 0 }); // Target position we are animating towards
+  const reqRef = useRef<number>();
+
+  // Responsive scale state
+  const [scale, setScale] = useState(1);
+
+  // Handle client-side resize and initial mobile scale calculation
+  useEffect(() => {
+    const handleResize = () => setScale(window.innerWidth < 640 ? 0.6 : 1);
+    handleResize(); // Initialize
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const basePositions = useRef(
     CARDS.map((card, i) => {
       const col = i % LAYOUT.COLS;
       const row = Math.floor(i / LAYOUT.COLS);
       return {
-        // Grid base position + optional per-card x/y nudge
         x: col * LAYOUT.CELL_W + (LAYOUT.CELL_W - LAYOUT.MAX_CARD_W) / 2 + (card.x ?? 0),
         y: row * LAYOUT.CELL_H + (LAYOUT.CELL_H - LAYOUT.MAX_CARD_H) / 2 + (card.y ?? 0),
       };
@@ -176,7 +187,7 @@ export default function Playground() {
 
   const renderPositions = useCallback(() => {
     if (bgRef.current) {
-      bgRef.current.style.transform = `translate3d(${panOffset.current.x % 18}px, ${panOffset.current.y % 18}px, 0)`;
+      bgRef.current.style.transform = `translate3d(${(panOffset.current.x * scale) % 18}px, ${(panOffset.current.y * scale) % 18}px, 0)`;
     }
     cardRefs.current.forEach((ref, i) => {
       if (!ref) return;
@@ -185,21 +196,40 @@ export default function Playground() {
       const y = base.y + panOffset.current.y;
       const rx = (((x + LAYOUT.WRAP_BUFFER) % WORLD_W) + WORLD_W) % WORLD_W - LAYOUT.WRAP_BUFFER;
       const ry = (((y + LAYOUT.WRAP_BUFFER) % WORLD_H) + WORLD_H) % WORLD_H - LAYOUT.WRAP_BUFFER;
-      ref.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
+      
+      // Apply the scale mathematically to the positioning and CSS scale
+      ref.style.transform = `translate3d(${rx * scale}px, ${ry * scale}px, 0) scale(${scale})`;
     });
-  }, []);
+  }, [scale]); // Re-render if scale changes
 
+  // Fluid Animation Loop
   useEffect(() => {
-    renderPositions();
-    const onWheel = (e: WheelEvent) => {
-      panOffset.current.x -= e.deltaX;
-      panOffset.current.y -= e.deltaY;
+    const loop = () => {
+      // Lerp (Linear Interpolation) to smoothly close the distance
+      panOffset.current.x += (targetOffset.current.x - panOffset.current.x) * 0.08;
+      panOffset.current.y += (targetOffset.current.y - panOffset.current.y) * 0.08;
+      
       renderPositions();
+      reqRef.current = requestAnimationFrame(loop);
+    };
+    reqRef.current = requestAnimationFrame(loop);
+
+    return () => {
+      if (reqRef.current) cancelAnimationFrame(reqRef.current);
+    };
+  }, [renderPositions]);
+
+  // Handle zooming/scrolling
+  useEffect(() => {
+    const onWheel = (e: WheelEvent) => {
+      targetOffset.current.x -= e.deltaX;
+      targetOffset.current.y -= e.deltaY;
     };
     window.addEventListener("wheel", onWheel, { passive: true });
     return () => window.removeEventListener("wheel", onWheel);
-  }, [renderPositions]);
+  }, []);
 
+  // Handle Dragging
   const startDrag = (e: React.MouseEvent | React.TouchEvent) => {
     if ((e.target as HTMLElement).closest("nav")) return;
     const isTouch = e.type === "touchstart";
@@ -209,18 +239,22 @@ export default function Playground() {
         : { x: (ev as MouseEvent).clientX, y: (ev as MouseEvent).clientY };
 
     const start = getXY(e.nativeEvent as MouseEvent | TouchEvent);
-    const origin = { ...panOffset.current };
+    
+    // Crucial: Base movement off the TARGET offset so rapid drags don't jump/stutter
+    const origin = { ...targetOffset.current };
 
     const onMove = (ev: MouseEvent | TouchEvent) => {
       const cur = getXY(ev);
-      panOffset.current.x = origin.x + (cur.x - start.x);
-      panOffset.current.y = origin.y + (cur.y - start.y);
-      renderPositions();
+      // Divide by scale so the element follows the finger perfectly on smaller views
+      targetOffset.current.x = origin.x + (cur.x - start.x) / scale;
+      targetOffset.current.y = origin.y + (cur.y - start.y) / scale;
     };
+    
     const onUp = () => {
       window.removeEventListener(isTouch ? "touchmove" : "mousemove", onMove);
       window.removeEventListener(isTouch ? "touchend" : "mouseup", onUp);
     };
+    
     window.addEventListener(isTouch ? "touchmove" : "mousemove", onMove);
     window.addEventListener(isTouch ? "touchend" : "mouseup", onUp);
   };
@@ -249,7 +283,7 @@ export default function Playground() {
       <div className="canvas" onMouseDown={startDrag} onTouchStart={startDrag}>
         <div ref={bgRef} style={styles.dotGrid} />
 
-        {/* Accent stripes — matches main page exactly */}
+        {/* Accent stripes */}
         <div style={styles.accentRed} />
         <div style={styles.accentBlue} />
 
