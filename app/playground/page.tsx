@@ -216,8 +216,10 @@ export default function Playground() {
   // Fluid animation loop
   useEffect(() => {
     const loop = () => {
-      panOffset.current.x += (targetOffset.current.x - panOffset.current.x) * 0.08;
-      panOffset.current.y += (targetOffset.current.y - panOffset.current.y) * 0.08;
+      // Higher factor = snappier / less bouncy (was 0.08)
+      const lerpFactor = scaleRef.current < 1 ? 0.22 : 0.14;
+      panOffset.current.x += (targetOffset.current.x - panOffset.current.x) * lerpFactor;
+      panOffset.current.y += (targetOffset.current.y - panOffset.current.y) * lerpFactor;
       renderPositions();
       reqRef.current = requestAnimationFrame(loop);
     };
@@ -251,9 +253,10 @@ export default function Playground() {
 
     const onMove = (ev: Event) => {
       const cur = getXY(ev as MouseEvent | TouchEvent);
-      // FIX 2 (applied): read scale from ref, never stale
-      targetOffset.current.x = origin.x + (cur.x - start.x) / scaleRef.current;
-      targetOffset.current.y = origin.y + (cur.y - start.y) / scaleRef.current;
+      // On touch, don't divide by scale so the canvas follows the finger 1:1
+      const divisor = isTouch ? 1 : scaleRef.current;
+      targetOffset.current.x = origin.x + (cur.x - start.x) / divisor;
+      targetOffset.current.y = origin.y + (cur.y - start.y) / divisor;
     };
 
     const onUp = () => {
