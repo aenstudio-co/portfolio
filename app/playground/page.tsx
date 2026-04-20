@@ -263,10 +263,10 @@ export default function Playground() {
     const onTouchMove = (e: TouchEvent) => {
       if (!dragging) return;
       e.preventDefault(); // stop Safari page scroll / rubber-band
-      const dx = e.touches[0].clientX - startX;
-      const dy = e.touches[0].clientY - startY;
-      targetOffset.current.x = originX + dx;
-      targetOffset.current.y = originY + dy;
+      // Divide by scale so world-space movement matches finger speed at any zoom
+      const s = scaleRef.current;
+      targetOffset.current.x = originX + (e.touches[0].clientX - startX) / s;
+      targetOffset.current.y = originY + (e.touches[0].clientY - startY) / s;
     };
 
     const onTouchEnd = () => {
