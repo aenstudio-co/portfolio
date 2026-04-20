@@ -19,36 +19,36 @@ interface CardDef {
 }
 
 const CARDS: CardDef[] = [
-  { id:  1, label: "Presentation",     cat: "Creatives Committee Onboarding Session", w: 360, h: 202, x: -100, y: -50, img: "/work/presentation-1.webp" },
-  { id:  2, label: "Publicity Material", cat: "Battle of the Wits",    w: 260, h: 260, x: 0, y:  25, img: "/work/post-1.webp" },
-  { id:  3, label: "Publicity Material", cat: "Sirkits Merch Release", w: 260, h: 260, x: 0, y: -25, img: undefined },
-  { id:  4, label: "Publicity Material", cat: "Bytecamp 3.0",          w: 270, h: 337, x: 0, y:   0, img: "/work/post-3.webp" },
-  { id:  5, label: "Project 05",       cat: "Motion  ", w: 228, h: 192, x: 0, y: 0, img: undefined },
-  { id:  6, label: "Project 06",       cat: "Product ", w: 180, h: 240, x: 0, y: 0, img: undefined },
-  { id:  7, label: "Illustration",     cat: "Clip Studio Paint", w: 360, h: 277, x: -80, y: -85, img: "/work/paint-1.webp" },
-  { id:  8, label: "Project 08",       cat: "Branding", w: 240, h: 252, x: 0, y: 0, img: undefined },
-  { id:  9, label: "Project 09",       cat: "UI      ", w: 192, h: 264, x: 0, y: 0, img: undefined },
-  { id: 10, label: "Project 10",       cat: "Motion  ", w: 357, h: 192, x: -100, y: 75, img: "/work/prototype-1.webp" },
-  { id: 11, label: "Project 11",       cat: "Product ", w: 180, h: 240, x: 0, y: 0, img: undefined },
-  { id: 12, label: "Project 12",       cat: "Poster  ", w: 216, h: 168, x: 0, y: 0, img: undefined },
-  { id: 13, label: "Project 13",       cat: "Branding", w: 260, h: 260, x: 0, y: 0, img: "/work/post-2.webp" },
-  { id: 14, label: "Membership ID",    cat: "ID & Character Design", w: 200, h: 312, x: 0, y: -27, img: "/work/merch-1.png" },
-  { id: 15, label: "Project 15",       cat: "Motion  ", w: 377, h: 272, x: -87, y: 0, img: "/work/merch-2.webp" },
-  { id: 16, label: "Project 16",       cat: "Product ", w: 180, h: 240, x: 0, y: 0, img: undefined },
-  { id: 17, label: "Project 17",       cat: "Poster  ", w: 216, h: 168, x: 0, y: 0, img: undefined },
-  { id: 18, label: "Project 18",       cat: "Branding", w: 240, h: 252, x: 0, y: 0, img: undefined },
-  { id: 19, label: "Project 19",       cat: "UI      ", w: 192, h: 264, x: 0, y: 0, img: undefined },
-  { id: 20, label: "Project 20",       cat: "Motion  ", w: 360, h: 258, x: -100, y: 0, img: "/work/plate-3.png" },
-  { id: 21, label: "Project 21",       cat: "Product ", w: 180, h: 240, x: 0, y: 0, img: undefined },
-  { id: 22, label: "Project 22",       cat: "Poster  ", w: 216, h: 168, x: 0, y: 0, img: undefined },
-  { id: 23, label: "Project 23",       cat: "Branding", w: 240, h: 252, x: 0, y: 0, img: undefined },
-  { id: 24, label: "Project 24",       cat: "UI      ", w: 192, h: 264, x: 0, y: 0, img: undefined },
-  { id: 25, label: "Project 25",       cat: "Motion  ", w: 228, h: 192, x: 0, y: 0, img: undefined },
-  { id: 26, label: "Project 26",       cat: "Product ", w: 180, h: 240, x: 0, y: 0, img: undefined },
-  { id: 27, label: "Project 27",       cat: "Poster  ", w: 360, h: 227, x: -100, y: 0, img: "/work/paint-2.webp" },
-  { id: 28, label: "Project 28",       cat: "Branding", w: 240, h: 252, x: 0, y: 0, img: undefined },
-  { id: 29, label: "Project 29",       cat: "UI      ", w: 192, h: 264, x: 0, y: 0, img: undefined },
-  { id: 30, label: "Project 30",       cat: "Motion  ", w: 228, h: 192, x: 0, y: 0, img: undefined },
+  { id:  1, label: "Presentation",      cat: "Creatives Committee Onboarding Session", w: 360, h: 202, x: -100, y:  -50, img: "/work/presentation-1.webp" },
+  { id:  2, label: "Publicity Material", cat: "Battle of the Wits",    w: 260, h: 260, x:   0, y:   25, img: "/work/post-1.webp" },
+  { id:  3, label: "Publicity Material", cat: "Sirkits Merch Release", w: 260, h: 260, x:   0, y:  -25, img: undefined },
+  { id:  4, label: "Publicity Material", cat: "Bytecamp 3.0",          w: 270, h: 337, x:   0, y:    0, img: "/work/post-3.webp" },
+  { id:  5, label: "Project 05",        cat: "Motion  ", w: 228, h: 192, x: 0, y: 0, img: undefined },
+  { id:  6, label: "Project 06",        cat: "Product ", w: 180, h: 240, x: 0, y: 0, img: undefined },
+  { id:  7, label: "Illustration",      cat: "Clip Studio Paint", w: 360, h: 277, x: -80, y: -85, img: "/work/paint-1.webp" },
+  { id:  8, label: "Project 08",        cat: "Branding", w: 240, h: 252, x: 0, y: 0, img: undefined },
+  { id:  9, label: "Project 09",        cat: "UI      ", w: 192, h: 264, x: 0, y: 0, img: undefined },
+  { id: 10, label: "Project 10",        cat: "Motion  ", w: 357, h: 192, x: -100, y: 75, img: "/work/prototype-1.webp" },
+  { id: 11, label: "Project 11",        cat: "Product ", w: 180, h: 240, x: 0, y: 0, img: undefined },
+  { id: 12, label: "Project 12",        cat: "Poster  ", w: 216, h: 168, x: 0, y: 0, img: undefined },
+  { id: 13, label: "Project 13",        cat: "Branding", w: 260, h: 260, x: 0, y: 0, img: "/work/post-2.webp" },
+  { id: 14, label: "Membership ID",     cat: "ID & Character Design", w: 200, h: 312, x: 0, y: -27, img: "/work/merch-1.png" },
+  { id: 15, label: "Project 15",        cat: "Motion  ", w: 377, h: 272, x: -87, y: 0, img: "/work/merch-2.webp" },
+  { id: 16, label: "Project 16",        cat: "Product ", w: 180, h: 240, x: 0, y: 0, img: undefined },
+  { id: 17, label: "Project 17",        cat: "Poster  ", w: 216, h: 168, x: 0, y: 0, img: undefined },
+  { id: 18, label: "Project 18",        cat: "Branding", w: 240, h: 252, x: 0, y: 0, img: undefined },
+  { id: 19, label: "Project 19",        cat: "UI      ", w: 192, h: 264, x: 0, y: 0, img: undefined },
+  { id: 20, label: "Project 20",        cat: "Motion  ", w: 360, h: 258, x: -100, y: 0, img: "/work/plate-3.png" },
+  { id: 21, label: "Project 21",        cat: "Product ", w: 180, h: 240, x: 0, y: 0, img: undefined },
+  { id: 22, label: "Project 22",        cat: "Poster  ", w: 216, h: 168, x: 0, y: 0, img: undefined },
+  { id: 23, label: "Project 23",        cat: "Branding", w: 240, h: 252, x: 0, y: 0, img: undefined },
+  { id: 24, label: "Project 24",        cat: "UI      ", w: 192, h: 264, x: 0, y: 0, img: undefined },
+  { id: 25, label: "Project 25",        cat: "Motion  ", w: 228, h: 192, x: 0, y: 0, img: undefined },
+  { id: 26, label: "Project 26",        cat: "Product ", w: 180, h: 240, x: 0, y: 0, img: undefined },
+  { id: 27, label: "Project 27",        cat: "Poster  ", w: 360, h: 227, x: -100, y: 0, img: "/work/paint-2.webp" },
+  { id: 28, label: "Project 28",        cat: "Branding", w: 240, h: 252, x: 0, y: 0, img: undefined },
+  { id: 29, label: "Project 29",        cat: "UI      ", w: 192, h: 264, x: 0, y: 0, img: undefined },
+  { id: 30, label: "Project 30",        cat: "Motion  ", w: 228, h: 192, x: 0, y: 0, img: undefined },
 ];
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -160,15 +160,10 @@ export default function Playground() {
 
   const panOffset    = useRef({ x: 0, y: 0 });
   const targetOffset = useRef({ x: 0, y: 0 });
-
-  // FIX 1: useRef<number> requires an initial value in strict React types.
-  // Use 0 as the initial value (will be overwritten by rAF immediately).
-  const reqRef = useRef<number>(0);
+  const reqRef       = useRef<number>(0);
 
   const [scale, setScale] = useState(1);
-
-  // FIX 2: Store scale in a ref so startDrag always reads the current value
-  // without going stale inside the closure.
+  // Keep scale in a ref so drag callbacks always read the current value
   const scaleRef = useRef(1);
   useEffect(() => { scaleRef.current = scale; }, [scale]);
 
@@ -203,23 +198,22 @@ export default function Playground() {
     cardRefs.current.forEach((ref, i) => {
       if (!ref) return;
       const base = basePositions.current[i];
-      const x = base.x + panOffset.current.x;
-      const y = base.y + panOffset.current.y;
+      const x  = base.x + panOffset.current.x;
+      const y  = base.y + panOffset.current.y;
       const rx = (((x + LAYOUT.WRAP_BUFFER) % WORLD_W) + WORLD_W) % WORLD_W - LAYOUT.WRAP_BUFFER;
       const ry = (((y + LAYOUT.WRAP_BUFFER) % WORLD_H) + WORLD_H) % WORLD_H - LAYOUT.WRAP_BUFFER;
       ref.style.transform = `translate3d(${rx * s}px, ${ry * s}px, 0) scale(${s})`;
     });
-  // scaleRef is a ref — intentionally omitted from deps (never changes identity)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Fluid animation loop
+  // ── Animation loop ────────────────────────────────────────────────────────
   useEffect(() => {
     const loop = () => {
-      // Higher factor = snappier / less bouncy (was 0.08)
-      const lerpFactor = scaleRef.current < 1 ? 0.22 : 0.14;
-      panOffset.current.x += (targetOffset.current.x - panOffset.current.x) * lerpFactor;
-      panOffset.current.y += (targetOffset.current.y - panOffset.current.y) * lerpFactor;
+      // 0.18 on desktop, 0.28 on mobile — snappy, not floaty
+      const lerp = scaleRef.current < 1 ? 0.28 : 0.18;
+      panOffset.current.x += (targetOffset.current.x - panOffset.current.x) * lerp;
+      panOffset.current.y += (targetOffset.current.y - panOffset.current.y) * lerp;
       renderPositions();
       reqRef.current = requestAnimationFrame(loop);
     };
@@ -227,7 +221,7 @@ export default function Playground() {
     return () => cancelAnimationFrame(reqRef.current);
   }, [renderPositions]);
 
-  // Wheel / trackpad pan
+  // ── Wheel / trackpad pan ──────────────────────────────────────────────────
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
       targetOffset.current.x -= e.deltaX;
@@ -237,35 +231,63 @@ export default function Playground() {
     return () => window.removeEventListener("wheel", onWheel);
   }, []);
 
-  // Drag (mouse + touch)
-  const startDrag = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+  // ── Touch drag — attached imperatively so we can use passive:false ────────
+  useEffect(() => {
+    let startX = 0;
+    let startY = 0;
+    let originX = 0;
+    let originY = 0;
+    let dragging = false;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if ((e.target as HTMLElement).closest("nav")) return;
+      startX  = e.touches[0].clientX;
+      startY  = e.touches[0].clientY;
+      originX = targetOffset.current.x;
+      originY = targetOffset.current.y;
+      dragging = true;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!dragging) return;
+      // preventDefault stops the browser hijacking the touch as a page scroll
+      e.preventDefault();
+      targetOffset.current.x = originX + (e.touches[0].clientX - startX);
+      targetOffset.current.y = originY + (e.touches[0].clientY - startY);
+    };
+
+    const onTouchEnd = () => { dragging = false; };
+
+    // passive:false is required on touchmove to allow preventDefault
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove",  onTouchMove,  { passive: false });
+    window.addEventListener("touchend",   onTouchEnd,   { passive: true });
+
+    return () => {
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove",  onTouchMove);
+      window.removeEventListener("touchend",   onTouchEnd);
+    };
+  }, []);
+
+  // ── Mouse drag ────────────────────────────────────────────────────────────
+  const startMouseDrag = useCallback((e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest("nav")) return;
+    const startX  = e.clientX;
+    const startY  = e.clientY;
+    const originX = targetOffset.current.x;
+    const originY = targetOffset.current.y;
 
-    const isTouch = e.type === "touchstart";
-
-    const getXY = (ev: MouseEvent | TouchEvent) =>
-      ev.type.startsWith("touch")
-        ? { x: (ev as TouchEvent).touches[0].clientX, y: (ev as TouchEvent).touches[0].clientY }
-        : { x: (ev as MouseEvent).clientX,            y: (ev as MouseEvent).clientY };
-
-    const start  = getXY(e.nativeEvent as MouseEvent | TouchEvent);
-    const origin = { ...targetOffset.current };
-
-    const onMove = (ev: Event) => {
-      const cur = getXY(ev as MouseEvent | TouchEvent);
-      // On touch, don't divide by scale so the canvas follows the finger 1:1
-      const divisor = isTouch ? 1 : scaleRef.current;
-      targetOffset.current.x = origin.x + (cur.x - start.x) / divisor;
-      targetOffset.current.y = origin.y + (cur.y - start.y) / divisor;
+    const onMove = (ev: MouseEvent) => {
+      targetOffset.current.x = originX + (ev.clientX - startX) / scaleRef.current;
+      targetOffset.current.y = originY + (ev.clientY - startY) / scaleRef.current;
     };
-
     const onUp = () => {
-      window.removeEventListener(isTouch ? "touchmove" : "mousemove", onMove);
-      window.removeEventListener(isTouch ? "touchend"  : "mouseup",   onUp);
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup",   onUp);
     };
-
-    window.addEventListener(isTouch ? "touchmove" : "mousemove", onMove);
-    window.addEventListener(isTouch ? "touchend"  : "mouseup",   onUp);
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup",   onUp);
   }, []);
 
   const NAV_LINKS = [
@@ -280,7 +302,7 @@ export default function Playground() {
         @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { width: 100%; height: 100%; overflow: hidden; background: #fff; }
-        .canvas { width: 100vw; height: 100vh; position: relative; overflow: hidden; cursor: grab; }
+        .canvas { width: 100vw; height: 100vh; position: relative; overflow: hidden; cursor: grab; touch-action: none; }
         .canvas:active { cursor: grabbing; }
         @media (max-width: 640px) {
           .nav-logo  { font-size: 12px !important; }
@@ -289,7 +311,7 @@ export default function Playground() {
         }
       `}</style>
 
-      <div className="canvas" onMouseDown={startDrag} onTouchStart={startDrag}>
+      <div className="canvas" onMouseDown={startMouseDrag}>
         <div ref={bgRef} style={styles.dotGrid} />
 
         <div style={styles.accentRed} />
