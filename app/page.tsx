@@ -139,6 +139,135 @@ function buildInitialNotes(isMobile: boolean): Note[] {
   ];
 }
 
+// ─── SplashScreen ─────────────────────────────────────────────────────────────
+// Simple doodle circuit draws itself with stroke-dashoffset.
+// No text — just the circuit. Fades out at 1.7s, done at 2.05s.
+//
+// Layout (200×140 viewBox):
+//   Left wire    (20,105)→(20,20)
+//   Top wire     (20,20)→(200,20)  with resistor zigzag at center
+//   Right wire   (200,20)→(200,105) with capacitor plates mid-right
+//   Bottom wire  (200,105)→(20,105) with LED triangle near right
+//   Battery      on left wire, mid-height
+//
+function SplashScreen({ onDone }: { onDone: () => void }) {
+  useEffect(() => {
+    const t = setTimeout(onDone, 2050);
+    return () => clearTimeout(t);
+  }, [onDone]);
+
+  return (
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 9999,
+      background: "#3B5FA0",
+      display: "flex",
+      alignItems: "center", justifyContent: "center",
+      animation: "splashOut 0.35s ease-in forwards 1.7s",
+    }}>
+      <style>{`
+        @keyframes splashOut { to { opacity: 0; pointer-events: none; } }
+        @keyframes dw        { to { stroke-dashoffset: 0; } }
+        @keyframes ci        { from { opacity: 0; } to { opacity: 1; } }
+        .cd {
+          fill: none;
+          stroke: #fff;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+        }
+      `}</style>
+
+      <svg viewBox="0 0 200 140" width="280" height="196" style={{ overflow: "visible" }}>
+
+        {/* Left wire: (20,105)→(20,20) — length 85 */}
+        <line className="cd" x1="20" y1="105" x2="20" y2="20"
+          strokeWidth="2" strokeDasharray="85" strokeDashoffset="85"
+          style={{ animation: "dw 0.22s ease forwards 0.05s" }} />
+
+        {/* Top wire left: (20,20)→(68,20) — length 48 */}
+        <line className="cd" x1="20" y1="20" x2="68" y2="20"
+          strokeWidth="2" strokeDasharray="48" strokeDashoffset="48"
+          style={{ animation: "dw 0.13s ease forwards 0.26s" }} />
+
+        {/* Resistor — simple doodle zigzag, 3 teeth only */}
+        <path className="cd"
+          d="M68,20 L74,20 L78,11 L86,29 L94,11 L102,29 L106,20 L126,20"
+          strokeWidth="2" strokeDasharray="105" strokeDashoffset="105"
+          style={{ animation: "dw 0.24s ease forwards 0.38s" }} />
+
+        {/* Top wire right: (126,20)→(200,20) — length 74 */}
+        <line className="cd" x1="126" y1="20" x2="200" y2="20"
+          strokeWidth="2" strokeDasharray="74" strokeDashoffset="74"
+          style={{ animation: "dw 0.19s ease forwards 0.60s" }} />
+
+        {/* Right wire top: (200,20)→(200,55) — length 35 */}
+        <line className="cd" x1="200" y1="20" x2="200" y2="55"
+          strokeWidth="2" strokeDasharray="35" strokeDashoffset="35"
+          style={{ animation: "dw 0.10s ease forwards 0.77s" }} />
+
+        {/* Capacitor plate 1 */}
+        <line className="cd" x1="188" y1="55" x2="212" y2="55"
+          strokeWidth="3" strokeDasharray="24" strokeDashoffset="24"
+          style={{ animation: "dw 0.09s ease forwards 0.86s" }} />
+
+        {/* Capacitor plate 2 */}
+        <line className="cd" x1="188" y1="66" x2="212" y2="66"
+          strokeWidth="3" strokeDasharray="24" strokeDashoffset="24"
+          style={{ animation: "dw 0.09s ease forwards 0.94s" }} />
+
+        {/* Right wire bottom: (200,66)→(200,105) — length 39 */}
+        <line className="cd" x1="200" y1="66" x2="200" y2="105"
+          strokeWidth="2" strokeDasharray="39" strokeDashoffset="39"
+          style={{ animation: "dw 0.11s ease forwards 1.02s" }} />
+
+        {/* Bottom wire right: (200,105)→(148,105) — length 52 */}
+        <line className="cd" x1="200" y1="105" x2="148" y2="105"
+          strokeWidth="2" strokeDasharray="52" strokeDashoffset="52"
+          style={{ animation: "dw 0.14s ease forwards 1.12s" }} />
+
+        {/* LED triangle: (148,97)→(148,113)→(136,105)→close */}
+        <path className="cd"
+          d="M148,97 L148,113 L136,105 Z"
+          strokeWidth="2" strokeDasharray="48" strokeDashoffset="48"
+          style={{ animation: "dw 0.15s ease forwards 1.25s" }} />
+
+        {/* LED cathode bar */}
+        <line className="cd" x1="136" y1="97" x2="136" y2="113"
+          strokeWidth="2.5" strokeDasharray="16" strokeDashoffset="16"
+          style={{ animation: "dw 0.07s ease forwards 1.39s" }} />
+
+        {/* LED shine rays */}
+        <g style={{ opacity: 0, animation: "ci 0.14s ease forwards 1.45s" }}>
+          <line className="cd" x1="127" y1="95" x2="122" y2="90" strokeWidth="1.5" />
+          <line className="cd" x1="131" y1="91" x2="128" y2="85" strokeWidth="1.5" />
+        </g>
+
+        {/* Bottom wire left: (136,105)→(20,105) — length 116 */}
+        <line className="cd" x1="136" y1="105" x2="20" y2="105"
+          strokeWidth="2" strokeDasharray="116" strokeDashoffset="116"
+          style={{ animation: "dw 0.30s ease forwards 1.47s" }} />
+
+        {/* Battery minus plate (shorter) */}
+        <line className="cd" x1="12" y1="75" x2="28" y2="75"
+          strokeWidth="2" strokeDasharray="16" strokeDashoffset="16"
+          style={{ animation: "dw 0.08s ease forwards 0.87s" }} />
+
+        {/* Battery plus plate (longer, thicker) */}
+        <line className="cd" x1="10" y1="66" x2="30" y2="66"
+          strokeWidth="3.5" strokeDasharray="20" strokeDashoffset="20"
+          style={{ animation: "dw 0.08s ease forwards 0.95s" }} />
+
+        {/* + − labels */}
+        <g style={{ opacity: 0, animation: "ci 0.12s ease forwards 1.02s" }}>
+          <text x="33" y="64" fill="#fff" fontSize="9" fontFamily="monospace" opacity="0.7">+</text>
+          <text x="33" y="78" fill="#fff" fontSize="9" fontFamily="monospace" opacity="0.7">−</text>
+        </g>
+
+      </svg>
+    </div>
+  );
+}
+
+
 // ─── DraggableNote ────────────────────────────────────────────────────────────
 function DraggableNote({
   note, onBringToFront, onClose,
@@ -386,27 +515,20 @@ function ProjectsSection({
   const GAP    = 28;
   const WINDOW = 3;
 
-  // Initialize with neutral standard values for server hydration
   const [slotPx, setSlotPx] = useState(660);
   const [vw, setVw] = useState(1440);
 
   useEffect(() => {
-    // Only access window parameters on the client
     const onResize = () => {
       setSlotPx(Math.min(660, 0.62 * window.innerWidth));
       setVw(window.innerWidth);
     };
-    
-    // Set initially once mounted
     onResize();
-
     if (isMobile) return;
-    
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, [isMobile]);
 
-  // Mobile: pull-down from top → back to notes
   const mobileRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!isMobile) return;
@@ -432,7 +554,6 @@ function ProjectsSection({
     };
   }, [isMobile, onBack]);
 
-  // ── Mobile layout ────────────────────────────────────────────────────────────
   if (isMobile) {
     return (
       <div ref={mobileRef} className="mobile-projects-scroll" style={{
@@ -460,10 +581,7 @@ function ProjectsSection({
     );
   }
 
-  // ── Desktop infinite carousel ────────────────────────────────────────────────
   const step = slotPx + GAP;
-  
-  // Track center anchor
   const trackCenterX = vw / 2 - slotPx / 2;
   const slotIndices = Array.from({ length: 2 * WINDOW + 1 }, (_, i) => virtualIdx - WINDOW + i);
 
@@ -478,8 +596,6 @@ function ProjectsSection({
         backgroundSize: "18px 18px", backgroundPosition: "13px 13px",
         pointerEvents: "none",
       }} />
-
-      {/* Track anchor — Absolute positioned elements to allow smooth offset transitions */}
       <div style={{
         position: "absolute",
         top: "50%",
@@ -498,8 +614,7 @@ function ProjectsSection({
               style={{
                 position: "absolute",
                 top: 0, left: 0,
-                width: "100%",
-                height: "100%",
+                width: "100%", height: "100%",
                 transform: `translateX(${offset * step}px) scale(${isActive ? 1 : 0.94})`,
                 opacity:   isActive ? 1 : 0.5,
                 transition: "transform 0.52s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.52s ease",
@@ -510,7 +625,6 @@ function ProjectsSection({
           );
         })}
       </div>
-
       <p style={{
         position: "absolute", bottom: 22, left: "50%",
         transform: "translateX(-50%)",
@@ -675,6 +789,7 @@ function ExploreButton({
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function Home() {
   const [mounted,      setMounted]      = useState(false);
+  const [splashDone,   setSplashDone]   = useState(false);
   const [isMobile,     setIsMobile]     = useState(false);
   const [notes,        setNotes]        = useState<Note[]>([]);
   const [deletedNotes, setDeletedNotes] = useState<Note[]>([]);
@@ -707,7 +822,6 @@ export default function Home() {
   useEffect(() => { showProjectsRef.current = showProjects; }, [showProjects]);
   useEffect(() => { isMobileRef.current = isMobile; },       [isMobile]);
 
-  // ── Navigation ────────────────────────────────────────────────────────────
   const goNext = useCallback(() => {
     if (cardBusy.current) return;
     cardBusy.current = true;
@@ -735,24 +849,17 @@ export default function Home() {
     setTimeout(() => { notesBusy.current = false; }, 850);
   }, []);
 
-  // ── Global wheel + touch ──────────────────────────────────────────────────
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
       const delta = Math.abs(e.deltaX) >= Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
 
-      // Ensure mouse scroll wheel works in mobile views to go back up 
       if (isMobileRef.current && showProjectsRef.current) {
-        const el = document.querySelector('.mobile-projects-scroll');
+        const el = document.querySelector(".mobile-projects-scroll");
         if (el && el.scrollTop <= 5 && delta < 0) {
           e.preventDefault();
           wheelAccum.current += delta;
-          if (wheelAccum.current <= -60) {
-            wheelAccum.current = 0;
-            goBackToNotes();
-          }
-        } else {
-          wheelAccum.current = 0;
-        }
+          if (wheelAccum.current <= -60) { wheelAccum.current = 0; goBackToNotes(); }
+        } else { wheelAccum.current = 0; }
         return;
       }
 
@@ -760,7 +867,6 @@ export default function Home() {
       if (notesBusy.current) return;
 
       if (!showProjectsRef.current) {
-        // Notes mode — scroll down to enter projects
         if (delta <= 0) { wheelAccum.current = Math.max(0, wheelAccum.current - 20); return; }
         wheelAccum.current += delta;
         if (wheelAccum.current > 120) {
@@ -773,16 +879,13 @@ export default function Home() {
         return;
       }
 
-      // Projects mode (desktop)
       if (cardBusy.current) return;
       if (Date.now() - lastFire.current < 120) return;
 
       if (delta < 0) {
-        // Scroll up/left → accumulate, then back to notes
-        wheelAccum.current += delta; // delta negative
+        wheelAccum.current += delta;
         if (wheelAccum.current <= -80) { wheelAccum.current = 0; goBackToNotes(); }
       } else {
-        // Scroll down/right → next card
         wheelAccum.current += delta;
         if (wheelAccum.current >= 80) { wheelAccum.current = 0; goNext(); }
       }
@@ -794,8 +897,8 @@ export default function Home() {
     };
 
     const onTouchEnd = (e: TouchEvent) => {
-      const dy = touchStartY.current - e.changedTouches[0].clientY; // + = swipe up
-      const dx = touchStartX.current - e.changedTouches[0].clientX; // + = swipe left
+      const dy = touchStartY.current - e.changedTouches[0].clientY;
+      const dx = touchStartX.current - e.changedTouches[0].clientX;
 
       if (isMobileRef.current) {
         if (!showProjectsRef.current && !notesBusy.current) {
@@ -809,7 +912,6 @@ export default function Home() {
         return;
       }
 
-      // Desktop
       if (notesBusy.current || cardBusy.current) return;
       if (!showProjectsRef.current) {
         if (dy > 60 && Math.abs(dy) > Math.abs(dx)) {
@@ -820,13 +922,12 @@ export default function Home() {
         }
         return;
       }
-      // Projects: horizontal = prev/next, swipe down = back to notes
       if (Math.abs(dx) >= Math.abs(dy)) {
         if (dx >  45) goNext();
         if (dx < -45) goPrev();
       } else {
-        if (dy < -45) goBackToNotes(); // finger down = back to notes
-        if (dy >  45) goNext();        // finger up   = next
+        if (dy < -45) goBackToNotes();
+        if (dy >  45) goNext();
       }
     };
 
@@ -840,16 +941,14 @@ export default function Home() {
     };
   }, [goNext, goPrev, goBackToNotes]);
 
-  // ── Detect mobile & initial mount ──────────────────────────────────────────
   useEffect(() => {
     setMounted(true);
     const check = () => setIsMobile(window.innerWidth <= 640);
-    check(); // Initial check on the client
+    check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // ── Init notes ─────────────────────────────────────────────────────────────
   useEffect(() => {
     const key = isMobile ? "m" : "d";
     if (initKeyRef.current === key) return;
@@ -860,7 +959,6 @@ export default function Home() {
     colorIndexRef.current = 0;
   }, [isMobile, setTopZ]);
 
-  // ── Note actions ───────────────────────────────────────────────────────────
   const bringToFront = useCallback((id: string) => {
     setTopZ(z => {
       const next = z + 1;
@@ -928,9 +1026,6 @@ export default function Home() {
     lastFire.current   = 0;
   }, [isMobile]);
 
-  // ── Render ────────────────────────────────────────────────────────────────
-  
-  // Return an empty state with the core background to prevent flashing and hydration mismatch
   if (!mounted) {
     return <div style={{ background: "#3B5FA0", width: "100vw", height: "100vh" }} />;
   }
@@ -950,6 +1045,9 @@ export default function Home() {
           .nav-link    { font-size: 10px !important; letter-spacing: 0.06em !important; }
         }
       `}</style>
+
+      {/* Splash screen — renders on top of everything, fades out after ~1.9s */}
+      {!splashDone && <SplashScreen onDone={() => setSplashDone(true)} />}
 
       <ProjectsSection virtualIdx={virtualIdx} isMobile={isMobile} onBack={goBackToNotes} />
 
