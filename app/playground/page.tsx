@@ -207,13 +207,22 @@ export default function Playground() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Whether the current drag is a touch (skip lerp) or mouse (use lerp)
+  const isTouchDragging = useRef(false);
+
   // ── Animation loop ────────────────────────────────────────────────────────
   useEffect(() => {
     const loop = () => {
-      // 0.18 on desktop, 0.28 on mobile — snappy, not floaty
-      const lerp = scaleRef.current < 1 ? 0.28 : 0.18;
-      panOffset.current.x += (targetOffset.current.x - panOffset.current.x) * lerp;
-      panOffset.current.y += (targetOffset.current.y - panOffset.current.y) * lerp;
+      if (isTouchDragging.current) {
+        // Touch: snap panOffset directly to target — zero lag, follows finger exactly
+        panOffset.current.x = targetOffset.current.x;
+        panOffset.current.y = targetOffset.current.y;
+      } else {
+        // Mouse / wheel: smooth lerp is fine
+        const lerp = 0.18;
+        panOffset.current.x += (targetOffset.current.x - panOffset.current.x) * lerp;
+        panOffset.current.y += (targetOffset.current.y - panOffset.current.y) * lerp;
+      }
       renderPositions();
       reqRef.current = requestAnimationFrame(loop);
     };
@@ -231,7 +240,9 @@ export default function Playground() {
     return () => window.removeEventListener("wheel", onWheel);
   }, []);
 
-  // ── Touch drag — attached imperatively so we can use passive:false ────────
+  // ── Touch drag (Safari iOS) ───────────────────────────────────────────────
+  // Attached imperatively so touchmove can be passive:false (required for preventDefault).
+  // panOffset is written directly (no lerp) so the canvas is glued to the finger.
   useEffect(() => {
     let startX = 0;
     let startY = 0;
@@ -246,19 +257,23 @@ export default function Playground() {
       originX = targetOffset.current.x;
       originY = targetOffset.current.y;
       dragging = true;
+      isTouchDragging.current = true;
     };
 
     const onTouchMove = (e: TouchEvent) => {
       if (!dragging) return;
-      // preventDefault stops the browser hijacking the touch as a page scroll
-      e.preventDefault();
-      targetOffset.current.x = originX + (e.touches[0].clientX - startX);
-      targetOffset.current.y = originY + (e.touches[0].clientY - startY);
+      e.preventDefault(); // stop Safari page scroll / rubber-band
+      const dx = e.touches[0].clientX - startX;
+      const dy = e.touches[0].clientY - startY;
+      targetOffset.current.x = originX + dx;
+      targetOffset.current.y = originY + dy;
     };
 
-    const onTouchEnd = () => { dragging = false; };
+    const onTouchEnd = () => {
+      dragging = false;
+      isTouchDragging.current = false;
+    };
 
-    // passive:false is required on touchmove to allow preventDefault
     window.addEventListener("touchstart", onTouchStart, { passive: true });
     window.addEventListener("touchmove",  onTouchMove,  { passive: false });
     window.addEventListener("touchend",   onTouchEnd,   { passive: true });
