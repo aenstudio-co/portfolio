@@ -43,7 +43,7 @@ const CARDS: CardDef[] = [
   { id: 22, label: "Project 22",        cat: "Poster  ", w: 216, h: 168, x: 0, y: 0, img: undefined },
   { id: 23, label: "Project 23",        cat: "Branding", w: 240, h: 252, x: 0, y: 0, img: undefined },
   { id: 24, label: "Project 24",        cat: "UI      ", w: 192, h: 264, x: 0, y: 0, img: undefined },
-  { id: 25, label: "Project 25",        cat: "Motion  ", w: 228, h: 192, x: 0, y: 0, img: undefined },
+  { id: 25, label: "Project 25",        cat: "Motion  ", w: 360, h: 260, x: -75, y: -25, img: "/work/plate-5.jpg" },
   { id: 26, label: "Project 26",        cat: "Product ", w: 180, h: 240, x: 0, y: 0, img: undefined },
   { id: 27, label: "Project 27",        cat: "Poster  ", w: 360, h: 227, x: -100, y: 0, img: "/work/paint-2.webp" },
   { id: 28, label: "Project 28",        cat: "Branding", w: 240, h: 252, x: 0, y: 0, img: undefined },

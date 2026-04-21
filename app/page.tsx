@@ -140,129 +140,55 @@ function buildInitialNotes(isMobile: boolean): Note[] {
 }
 
 // ─── SplashScreen ─────────────────────────────────────────────────────────────
-// Simple doodle circuit draws itself with stroke-dashoffset.
-// No text — just the circuit. Fades out at 1.7s, done at 2.05s.
-//
-// Layout (200×140 viewBox):
-//   Left wire    (20,105)→(20,20)
-//   Top wire     (20,20)→(200,20)  with resistor zigzag at center
-//   Right wire   (200,20)→(200,105) with capacitor plates mid-right
-//   Bottom wire  (200,105)→(20,105) with LED triangle near right
-//   Battery      on left wire, mid-height
-//
+// Types out "kryzrl" one char at a time, blinking cursor, then fades out.
+// Lowercase Consolas, small, ~1.5s total.
 function SplashScreen({ onDone }: { onDone: () => void }) {
+  const WORD  = "https://kris-myportfolio.fr";
+  const SPEED = 75; // ms per character
+  const HOLD  = 480; // ms to hold fully-typed before fading
+  const FADE  = 280; // ms fade-out duration
+
+  const [count,  setCount]  = useState(0);
+  const [fading, setFading] = useState(false);
+
   useEffect(() => {
-    const t = setTimeout(onDone, 2050);
-    return () => clearTimeout(t);
-  }, [onDone]);
+    if (count < WORD.length) {
+      const t = setTimeout(() => setCount(c => c + 1), SPEED);
+      return () => clearTimeout(t);
+    }
+    const t1 = setTimeout(() => setFading(true), HOLD);
+    const t2 = setTimeout(onDone, HOLD + FADE);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [count, onDone]);
 
   return (
     <div style={{
       position: "fixed", inset: 0, zIndex: 9999,
       background: "#3B5FA0",
-      display: "flex",
-      alignItems: "center", justifyContent: "center",
-      animation: "splashOut 0.35s ease-in forwards 1.7s",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      opacity: fading ? 0 : 1,
+      transition: fading ? `opacity ${FADE}ms ease-in` : "none",
+      pointerEvents: "none",
     }}>
-      <style>{`
-        @keyframes splashOut { to { opacity: 0; pointer-events: none; } }
-        @keyframes dw        { to { stroke-dashoffset: 0; } }
-        @keyframes ci        { from { opacity: 0; } to { opacity: 1; } }
-        .cd {
-          fill: none;
-          stroke: #fff;
-          stroke-linecap: round;
-          stroke-linejoin: round;
-        }
-      `}</style>
-
-      <svg viewBox="0 0 200 140" width="280" height="196" style={{ overflow: "visible" }}>
-
-        {/* Left wire: (20,105)→(20,20) — length 85 */}
-        <line className="cd" x1="20" y1="105" x2="20" y2="20"
-          strokeWidth="2" strokeDasharray="85" strokeDashoffset="85"
-          style={{ animation: "dw 0.22s ease forwards 0.05s" }} />
-
-        {/* Top wire left: (20,20)→(68,20) — length 48 */}
-        <line className="cd" x1="20" y1="20" x2="68" y2="20"
-          strokeWidth="2" strokeDasharray="48" strokeDashoffset="48"
-          style={{ animation: "dw 0.13s ease forwards 0.26s" }} />
-
-        {/* Resistor — simple doodle zigzag, 3 teeth only */}
-        <path className="cd"
-          d="M68,20 L74,20 L78,11 L86,29 L94,11 L102,29 L106,20 L126,20"
-          strokeWidth="2" strokeDasharray="105" strokeDashoffset="105"
-          style={{ animation: "dw 0.24s ease forwards 0.38s" }} />
-
-        {/* Top wire right: (126,20)→(200,20) — length 74 */}
-        <line className="cd" x1="126" y1="20" x2="200" y2="20"
-          strokeWidth="2" strokeDasharray="74" strokeDashoffset="74"
-          style={{ animation: "dw 0.19s ease forwards 0.60s" }} />
-
-        {/* Right wire top: (200,20)→(200,55) — length 35 */}
-        <line className="cd" x1="200" y1="20" x2="200" y2="55"
-          strokeWidth="2" strokeDasharray="35" strokeDashoffset="35"
-          style={{ animation: "dw 0.10s ease forwards 0.77s" }} />
-
-        {/* Capacitor plate 1 */}
-        <line className="cd" x1="188" y1="55" x2="212" y2="55"
-          strokeWidth="3" strokeDasharray="24" strokeDashoffset="24"
-          style={{ animation: "dw 0.09s ease forwards 0.86s" }} />
-
-        {/* Capacitor plate 2 */}
-        <line className="cd" x1="188" y1="66" x2="212" y2="66"
-          strokeWidth="3" strokeDasharray="24" strokeDashoffset="24"
-          style={{ animation: "dw 0.09s ease forwards 0.94s" }} />
-
-        {/* Right wire bottom: (200,66)→(200,105) — length 39 */}
-        <line className="cd" x1="200" y1="66" x2="200" y2="105"
-          strokeWidth="2" strokeDasharray="39" strokeDashoffset="39"
-          style={{ animation: "dw 0.11s ease forwards 1.02s" }} />
-
-        {/* Bottom wire right: (200,105)→(148,105) — length 52 */}
-        <line className="cd" x1="200" y1="105" x2="148" y2="105"
-          strokeWidth="2" strokeDasharray="52" strokeDashoffset="52"
-          style={{ animation: "dw 0.14s ease forwards 1.12s" }} />
-
-        {/* LED triangle: (148,97)→(148,113)→(136,105)→close */}
-        <path className="cd"
-          d="M148,97 L148,113 L136,105 Z"
-          strokeWidth="2" strokeDasharray="48" strokeDashoffset="48"
-          style={{ animation: "dw 0.15s ease forwards 1.25s" }} />
-
-        {/* LED cathode bar */}
-        <line className="cd" x1="136" y1="97" x2="136" y2="113"
-          strokeWidth="2.5" strokeDasharray="16" strokeDashoffset="16"
-          style={{ animation: "dw 0.07s ease forwards 1.39s" }} />
-
-        {/* LED shine rays */}
-        <g style={{ opacity: 0, animation: "ci 0.14s ease forwards 1.45s" }}>
-          <line className="cd" x1="127" y1="95" x2="122" y2="90" strokeWidth="1.5" />
-          <line className="cd" x1="131" y1="91" x2="128" y2="85" strokeWidth="1.5" />
-        </g>
-
-        {/* Bottom wire left: (136,105)→(20,105) — length 116 */}
-        <line className="cd" x1="136" y1="105" x2="20" y2="105"
-          strokeWidth="2" strokeDasharray="116" strokeDashoffset="116"
-          style={{ animation: "dw 0.30s ease forwards 1.47s" }} />
-
-        {/* Battery minus plate (shorter) */}
-        <line className="cd" x1="12" y1="75" x2="28" y2="75"
-          strokeWidth="2" strokeDasharray="16" strokeDashoffset="16"
-          style={{ animation: "dw 0.08s ease forwards 0.87s" }} />
-
-        {/* Battery plus plate (longer, thicker) */}
-        <line className="cd" x1="10" y1="66" x2="30" y2="66"
-          strokeWidth="3.5" strokeDasharray="20" strokeDashoffset="20"
-          style={{ animation: "dw 0.08s ease forwards 0.95s" }} />
-
-        {/* + − labels */}
-        <g style={{ opacity: 0, animation: "ci 0.12s ease forwards 1.02s" }}>
-          <text x="33" y="64" fill="#fff" fontSize="9" fontFamily="monospace" opacity="0.7">+</text>
-          <text x="33" y="78" fill="#fff" fontSize="9" fontFamily="monospace" opacity="0.7">−</text>
-        </g>
-
-      </svg>
+      <style>{`@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }`}</style>
+      <span style={{
+        fontFamily: CFONT,
+        fontSize: 14,
+        fontWeight: 400,
+        color: "rgba(255,255,255,0.88)",
+        letterSpacing: "0.14em",
+      }}>
+        {WORD.slice(0, count)}
+        <span style={{
+          display: "inline-block",
+          width: 1.5,
+          height: "0.85em",
+          background: "rgba(255,255,255,0.88)",
+          marginLeft: 3,
+          verticalAlign: "middle",
+          animation: count === WORD.length ? "blink 0.75s step-end infinite" : "none",
+        }} />
+      </span>
     </div>
   );
 }
