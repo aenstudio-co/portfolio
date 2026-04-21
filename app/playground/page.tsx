@@ -22,14 +22,14 @@ const CARDS: CardDef[] = [
   { id:  1, label: "Presentation",      cat: "Creatives Committee Onboarding Session", w: 390, h: 232, x: -80, y:  -50, img: "/work/presentation-1.webp" },
   { id:  2, label: "Publicity Material", cat: "Battle of the Wits",    w: 260, h: 260, x:   0, y:   25, img: "/work/post-1.webp" },
   { id:  3, label: "Publicity Material", cat: "Sirkits Merch Release", w: 325, h: 325, x:   -35, y:  -50, img: "/work/post-11.webp"  },
-  { id: 4, label: "Project 11",        cat: "Product ", w: 275, h: 307, x: -15, y: -15, img: "/work/prototype-3.png" },
+  { id:  4, label: "Project 11",        cat: "Product ", w: 275, h: 307, x: -15, y: -15, img: "/work/prototype-3.png" },
   { id:  5, label: "Project 05",        cat: "Motion  ", w: 300, h: 225, x: -20, y: 50, img: "/work/paint-3.webp" },
   { id:  6, label: "Project 06",        cat: "Product ", w: 235, h: 300, x: -25, y: -50, img: "/work/post-6.webp" },
-  { id: 7, label: "Project 15",        cat: "Motion  ", w: 377, h: 272, x: -87, y: -75, img: "/work/sticker-2.png" },
+  { id:  7, label: "Project 15",        cat: "Motion  ", w: 377, h: 272, x: -87, y: -75, img: "/work/sticker-2.png" },
   { id:  8, label: "Project 08",        cat: "Branding", w: 240, h: 252, x: 0, y: 0, img: undefined },
   { id:  9, label: "Project 09",        cat: "UI      ", w: 192, h: 264, x: 0, y: 0, img: undefined },
   { id: 10, label: "Project 10",        cat: "Motion  ", w: 357, h: 192, x: -105, y: -0, img: "/work/prototype-1.webp" },
-  { id:  11, label: "Publicity Material", cat: "Bytecamp 3.0",          w: 270, h: 337, x:   -50, y:    -15, img: "/work/post-3.webp" },
+  { id: 11, label: "Publicity Material", cat: "Bytecamp 3.0",          w: 270, h: 337, x:   -50, y:    -15, img: "/work/post-3.webp" },
   { id: 12, label: "Project 12",        cat: "Poster  ", w: 287, h: 230, x: -75, y: 15, img: "/work/post-9.webp" },
   { id: 13, label: "Project 13",        cat: "Branding", w: 260, h: 260, x: 0, y: 0, img: "/work/post-2.webp" },
   { id: 14, label: "Membership ID",     cat: "ID & Character Design", w: 200, h: 312, x: -35, y: -25, img: "/work/merch-1.png" },
@@ -157,13 +157,14 @@ export default function Playground() {
   const [hoveredLabel, setHoveredLabel] = useState<string | null>(null);
   const bgRef    = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  // Ref to the canvas div so we can attach touch listeners directly on it
+  const canvasRef = useRef<HTMLDivElement>(null);
 
   const panOffset    = useRef({ x: 0, y: 0 });
   const targetOffset = useRef({ x: 0, y: 0 });
   const reqRef       = useRef<number>(0);
 
   const [scale, setScale] = useState(1);
-  // Keep scale in a ref so drag callbacks always read the current value
   const scaleRef = useRef(1);
   useEffect(() => { scaleRef.current = scale; }, [scale]);
 
@@ -207,18 +208,15 @@ export default function Playground() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Whether the current drag is a touch (skip lerp) or mouse (use lerp)
   const isTouchDragging = useRef(false);
 
   // ── Animation loop ────────────────────────────────────────────────────────
   useEffect(() => {
     const loop = () => {
       if (isTouchDragging.current) {
-        // Touch: snap panOffset directly to target — zero lag, follows finger exactly
         panOffset.current.x = targetOffset.current.x;
         panOffset.current.y = targetOffset.current.y;
       } else {
-        // Mouse / wheel: smooth lerp is fine
         const lerp = 0.18;
         panOffset.current.x += (targetOffset.current.x - panOffset.current.x) * lerp;
         panOffset.current.y += (targetOffset.current.y - panOffset.current.y) * lerp;
@@ -240,10 +238,15 @@ export default function Playground() {
     return () => window.removeEventListener("wheel", onWheel);
   }, []);
 
-  // ── Touch drag (Safari iOS) ───────────────────────────────────────────────
-  // Attached imperatively so touchmove can be passive:false (required for preventDefault).
-  // panOffset is written directly (no lerp) so the canvas is glued to the finger.
+  // ── Touch drag — attached on the canvas element directly ──────────────────
+  // KEY FIX: attaching to the canvas element (not window) with passive:false
+  // on BOTH touchstart and touchmove. Safari iOS on Vercel ignores window-level
+  // passive:false in some cases — element-level listeners fire first and can
+  // call preventDefault before Safari's scroll gesture is committed.
   useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
     let startX = 0;
     let startY = 0;
     let originX = 0;
@@ -252,6 +255,8 @@ export default function Playground() {
 
     const onTouchStart = (e: TouchEvent) => {
       if ((e.target as HTMLElement).closest("nav")) return;
+      // preventDefault here stops Safari from starting ANY scroll/zoom gesture
+      e.preventDefault();
       startX  = e.touches[0].clientX;
       startY  = e.touches[0].clientY;
       originX = targetOffset.current.x;
@@ -262,8 +267,7 @@ export default function Playground() {
 
     const onTouchMove = (e: TouchEvent) => {
       if (!dragging) return;
-      e.preventDefault(); // stop Safari page scroll / rubber-band
-      // Divide by scale so world-space movement matches finger speed at any zoom
+      e.preventDefault();
       const s = scaleRef.current;
       targetOffset.current.x = originX + (e.touches[0].clientX - startX) / s;
       targetOffset.current.y = originY + (e.touches[0].clientY - startY) / s;
@@ -274,14 +278,15 @@ export default function Playground() {
       isTouchDragging.current = false;
     };
 
-    window.addEventListener("touchstart", onTouchStart, { passive: true });
-    window.addEventListener("touchmove",  onTouchMove,  { passive: false });
-    window.addEventListener("touchend",   onTouchEnd,   { passive: true });
+    // Both passive:false — this is the critical fix for Safari iOS on Vercel
+    canvas.addEventListener("touchstart", onTouchStart, { passive: false });
+    canvas.addEventListener("touchmove",  onTouchMove,  { passive: false });
+    canvas.addEventListener("touchend",   onTouchEnd,   { passive: true  });
 
     return () => {
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchmove",  onTouchMove);
-      window.removeEventListener("touchend",   onTouchEnd);
+      canvas.removeEventListener("touchstart", onTouchStart);
+      canvas.removeEventListener("touchmove",  onTouchMove);
+      canvas.removeEventListener("touchend",   onTouchEnd);
     };
   }, []);
 
@@ -317,7 +322,7 @@ export default function Playground() {
         @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { width: 100%; height: 100%; overflow: hidden; background: #fff; }
-        .canvas { width: 100vw; height: 100vh; position: relative; overflow: hidden; cursor: grab; touch-action: none; }
+        .canvas { width: 100vw; height: 100vh; position: relative; overflow: hidden; cursor: grab; }
         .canvas:active { cursor: grabbing; }
         @media (max-width: 640px) {
           .nav-logo  { font-size: 12px !important; }
@@ -326,7 +331,17 @@ export default function Playground() {
         }
       `}</style>
 
-      <div className="canvas" onMouseDown={startMouseDrag}>
+      {/*
+        touch-action: none is on the inline style — guaranteed to apply before
+        first paint on Vercel, unlike a class-based rule which may FOUC on iOS.
+        This tells Safari not to handle any touch gestures on this element at all.
+      */}
+      <div
+        ref={canvasRef}
+        className="canvas"
+        style={{ touchAction: "none" }}
+        onMouseDown={startMouseDrag}
+      >
         <div ref={bgRef} style={styles.dotGrid} />
 
         <div style={styles.accentRed} />
