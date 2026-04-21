@@ -321,8 +321,19 @@ export default function Playground() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { width: 100%; height: 100%; overflow: hidden; background: #fff; }
-        .canvas { width: 100vw; height: 100vh; position: relative; overflow: hidden; cursor: grab; }
+        html, body {
+          width: 100%; height: 100%;
+          overflow: hidden;
+          overscroll-behavior: none;
+          touch-action: none;
+          background: #fff;
+          -webkit-overflow-scrolling: auto;
+        }
+        .canvas {
+          width: 100vw; height: 100vh;
+          position: fixed; top: 0; left: 0;
+          cursor: grab;
+        }
         .canvas:active { cursor: grabbing; }
         @media (max-width: 640px) {
           .nav-logo  { font-size: 12px !important; }
@@ -339,7 +350,7 @@ export default function Playground() {
       <div
         ref={canvasRef}
         className="canvas"
-        style={{ touchAction: "none" }}
+        style={{ touchAction: "none", userSelect: "none" }}
         onMouseDown={startMouseDrag}
       >
         <div ref={bgRef} style={styles.dotGrid} />
