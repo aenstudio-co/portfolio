@@ -4,6 +4,9 @@ import React, { useRef, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
+/* ─────────────────────────────────────────────────────────────────────────
+   CARD DATA
+───────────────────────────────────────────────────────────────────────── */
 interface CardDef {
   id: number;
   label: string;
@@ -16,162 +19,206 @@ interface CardDef {
 }
 
 const CARDS: CardDef[] = [
-  { id:  1, label: "Presentation",       cat: "Creatives Committee Onboarding Session", w: 390, h: 232, x: -80,  y: -50, img: "/work/presentation-1.webp" },
-  { id:  2, label: "Publicity Material", cat: "Battle of the Wits",                     w: 260, h: 260, x:   0,  y:  25, img: "/work/post-1.webp" },
-  { id:  3, label: "Publicity Material", cat: "Sirkits Merch Release",                  w: 325, h: 325, x: -35,  y: -50, img: "/work/post-11.webp" },
-  { id:  4, label: "Project 11",         cat: "Product ",                                w: 275, h: 307, x: -15,  y: -15, img: "/work/prototype-3.png" },
-  { id:  5, label: "Project 05",         cat: "Motion  ",                                w: 300, h: 225, x: -20,  y:  50, img: "/work/paint-3.webp" },
-  { id:  6, label: "Project 06",         cat: "Product ",                                w: 235, h: 300, x: -25,  y: -50, img: "/work/post-6.webp" },
-  { id:  7, label: "Project 15",         cat: "Motion  ",                                w: 377, h: 272, x: -87,  y: -75, img: "/work/sticker-2.png" },
-  { id:  8, label: "Project 08",         cat: "Branding",                                w: 240, h: 252, x:   0,  y:   0, img: undefined },
-  { id:  9, label: "Project 09",         cat: "UI      ",                                w: 192, h: 264, x:   0,  y:   0, img: undefined },
+  { id:  1, label: "Presentation",       cat: "Creatives Committee Onboarding Session", w: 390, h: 232, x:  -80, y: -50, img: "/work/presentation-1.webp" },
+  { id:  2, label: "Publicity Material", cat: "Battle of the Wits",                     w: 260, h: 260, x:    0, y:  25, img: "/work/post-1.webp" },
+  { id:  3, label: "Publicity Material", cat: "Sirkits Merch Release",                  w: 325, h: 325, x:  -35, y: -50, img: "/work/post-11.webp" },
+  { id:  4, label: "Project 11",         cat: "Product ",                                w: 275, h: 307, x:  -15, y: -15, img: "/work/prototype-3.png" },
+  { id:  5, label: "Project 05",         cat: "Motion  ",                                w: 300, h: 225, x:  -20, y:  50, img: "/work/paint-3.webp" },
+  { id:  6, label: "Project 06",         cat: "Product ",                                w: 235, h: 300, x:  -25, y: -50, img: "/work/post-6.webp" },
+  { id:  7, label: "Project 15",         cat: "Motion  ",                                w: 377, h: 272, x:  -87, y: -75, img: "/work/sticker-2.png" },
+  { id:  8, label: "Project 08",         cat: "Branding",                                w: 240, h: 252, x:    0, y:   0, img: undefined },
+  { id:  9, label: "Project 09",         cat: "UI      ",                                w: 192, h: 264, x:    0, y:   0, img: undefined },
   { id: 10, label: "Project 10",         cat: "Motion  ",                                w: 357, h: 192, x: -105, y:   0, img: "/work/prototype-1.webp" },
-  { id: 11, label: "Publicity Material", cat: "Bytecamp 3.0",                            w: 270, h: 337, x: -50,  y: -15, img: "/work/post-3.webp" },
-  { id: 12, label: "Project 12",         cat: "Poster  ",                                w: 287, h: 230, x: -75,  y:  15, img: "/work/post-9.webp" },
-  { id: 13, label: "Project 13",         cat: "Branding",                                w: 260, h: 260, x:   0,  y:   0, img: "/work/post-2.webp" },
-  { id: 14, label: "Membership ID",      cat: "ID & Character Design",                   w: 200, h: 312, x: -35,  y: -25, img: "/work/merch-1.png" },
+  { id: 11, label: "Publicity Material", cat: "Bytecamp 3.0",                            w: 270, h: 337, x:  -50, y: -15, img: "/work/post-3.webp" },
+  { id: 12, label: "Project 12",         cat: "Poster  ",                                w: 287, h: 230, x:  -75, y:  15, img: "/work/post-9.webp" },
+  { id: 13, label: "Project 13",         cat: "Branding",                                w: 260, h: 260, x:    0, y:   0, img: "/work/post-2.webp" },
+  { id: 14, label: "Membership ID",      cat: "ID & Character Design",                   w: 200, h: 312, x:  -35, y: -25, img: "/work/merch-1.png" },
   { id: 15, label: "Illustration",       cat: "Clip Studio Paint",                       w: 360, h: 277, x: -130, y:   0, img: "/work/paint-1.webp" },
-  { id: 16, label: "Project 16",         cat: "Product ",                                w: 275, h: 350, x: -75,  y: -80, img: "/work/post-10.webp" },
-  { id: 17, label: "Project 17",         cat: "Poster  ",                                w: 350, h: 250, x: -95,  y:  40, img: "/work/prototype-2.png" },
-  { id: 18, label: "Project 18",         cat: "Branding",                                w: 240, h: 252, x:   0,  y:   0, img: undefined },
-  { id: 19, label: "Project 19",         cat: "UI      ",                                w: 227, h: 275, x: -75,  y: -20, img: "/work/prototype-4.png" },
+  { id: 16, label: "Project 16",         cat: "Product ",                                w: 275, h: 350, x:  -75, y: -80, img: "/work/post-10.webp" },
+  { id: 17, label: "Project 17",         cat: "Poster  ",                                w: 350, h: 250, x:  -95, y:  40, img: "/work/prototype-2.png" },
+  { id: 18, label: "Project 18",         cat: "Branding",                                w: 240, h: 252, x:    0, y:   0, img: undefined },
+  { id: 19, label: "Project 19",         cat: "UI      ",                                w: 227, h: 275, x:  -75, y: -20, img: "/work/prototype-4.png" },
   { id: 20, label: "Project 20",         cat: "Motion  ",                                w: 360, h: 258, x: -100, y:   0, img: "/work/plate-3.png" },
-  { id: 21, label: "Project 21",         cat: "Product ",                                w: 180, h: 240, x:   0,  y:   0, img: undefined },
+  { id: 21, label: "Project 21",         cat: "Product ",                                w: 180, h: 240, x:    0, y:   0, img: undefined },
   { id: 22, label: "Project 22",         cat: "Poster  ",                                w: 375, h: 275, x: -100, y:   0, img: "/work/post-4.webp" },
-  { id: 23, label: "Project 23",         cat: "Branding",                                w: 240, h: 252, x:   0,  y:   0, img: undefined },
-  { id: 24, label: "Project 24",         cat: "UI      ",                                w: 247, h: 325, x: -25,  y: -30, img: "/work/post-8.webp" },
-  { id: 25, label: "Project 25",         cat: "Motion  ",                                w: 360, h: 260, x: -75,  y: -25, img: "/work/plate-5.jpg" },
-  { id: 26, label: "Project 26",         cat: "Product ",                                w: 180, h: 240, x:   0,  y:   0, img: undefined },
+  { id: 23, label: "Project 23",         cat: "Branding",                                w: 240, h: 252, x:    0, y:   0, img: undefined },
+  { id: 24, label: "Project 24",         cat: "UI      ",                                w: 247, h: 325, x:  -25, y: -30, img: "/work/post-8.webp" },
+  { id: 25, label: "Project 25",         cat: "Motion  ",                                w: 360, h: 260, x:  -75, y: -25, img: "/work/plate-5.jpg" },
+  { id: 26, label: "Project 26",         cat: "Product ",                                w: 180, h: 240, x:    0, y:   0, img: undefined },
   { id: 27, label: "Project 27",         cat: "Poster  ",                                w: 360, h: 227, x: -100, y:   0, img: "/work/paint-2.webp" },
-  { id: 28, label: "Project 28",         cat: "Branding",                                w: 325, h: 195, x: -35,  y:  35, img: "/work/paint-4.png" },
-  { id: 29, label: "Project 29",         cat: "UI      ",                                w: 275, h: 357, x:   0,  y: -25, img: "/work/post-5.webp" },
-  { id: 30, label: "Project 30",         cat: "Motion  ",                                w: 275, h: 192, x: -35,  y:  15, img: "/work/post-7.webp" },
+  { id: 28, label: "Project 28",         cat: "Branding",                                w: 325, h: 195, x:  -35, y:  35, img: "/work/paint-4.png" },
+  { id: 29, label: "Project 29",         cat: "UI      ",                                w: 275, h: 357, x:    0, y: -25, img: "/work/post-5.webp" },
+  { id: 30, label: "Project 30",         cat: "Motion  ",                                w: 275, h: 192, x:  -35, y:  15, img: "/work/post-7.webp" },
 ];
 
-const LAYOUT = {
-  COLS: 6, ROWS: 5,
-  CELL_W: 340, CELL_H: 320,
-  MAX_CARD_W: 280, MAX_CARD_H: 280,
-  WRAP_BUFFER: 400,
-};
-const WORLD_W = LAYOUT.COLS * LAYOUT.CELL_W;
-const WORLD_H = LAYOUT.ROWS * LAYOUT.CELL_H;
+/* ─────────────────────────────────────────────────────────────────────────
+   LAYOUT
+───────────────────────────────────────────────────────────────────────── */
+const COLS = 6, ROWS = 5;
+const CELL_W = 340, CELL_H = 320;
+const MAX_CARD_W = 280, MAX_CARD_H = 280;
+const WRAP_BUFFER = 400;
+const WORLD_W = COLS * CELL_W;
+const WORLD_H = ROWS * CELL_H;
 
+/* ─────────────────────────────────────────────────────────────────────────
+   STYLES  (identical to original UI)
+───────────────────────────────────────────────────────────────────────── */
 const FONT = "'Courier Prime', 'Courier New', monospace";
 const SANS = "Arial, Helvetica, sans-serif";
 
-const styles = {
+const S = {
   dotGrid: {
     position: "absolute", inset: "-200px",
     backgroundImage: "radial-gradient(circle, #A8C8E8 1.1px, transparent 1.1px)",
     backgroundSize: "18px 18px",
     zIndex: 0, pointerEvents: "none", willChange: "transform",
   } as React.CSSProperties,
-  accentRed:  { position: "absolute", top: 43, left: 0, right: 0, height: 2, background: "#E03030", zIndex: 200, pointerEvents: "none" } as React.CSSProperties,
-  accentBlue: { position: "absolute", top: 47, left: 0, right: 0, height: 2, background: "#3B72C8", zIndex: 200, pointerEvents: "none" } as React.CSSProperties,
+
+  accentRed: {
+    position: "absolute", top: 43, left: 0, right: 0,
+    height: 2, background: "#E03030", zIndex: 200, pointerEvents: "none",
+  } as React.CSSProperties,
+
+  accentBlue: {
+    position: "absolute", top: 47, left: 0, right: 0,
+    height: 2, background: "#3B72C8", zIndex: 200, pointerEvents: "none",
+  } as React.CSSProperties,
+
   nav: {
     position: "absolute", top: 0, left: 0, right: 0, height: 43,
     display: "flex", alignItems: "center", justifyContent: "space-between",
-    padding: "0 20px", zIndex: 300, background: "#ffffff",
+    padding: "0 20px", zIndex: 300, background: "#fff",
   } as React.CSSProperties,
-  logo: { fontFamily: FONT, fontWeight: 400, fontSize: 14, letterSpacing: "0.10em", color: "#707070", textDecoration: "none" } as React.CSSProperties,
+
+  logo: {
+    fontFamily: FONT, fontWeight: 400, fontSize: 14,
+    letterSpacing: "0.10em", color: "#707070", textDecoration: "none",
+  } as React.CSSProperties,
+
   navLink: (active: boolean): React.CSSProperties => ({
-    fontFamily: FONT, fontWeight: 400, fontSize: 13, letterSpacing: "0.14em", color: "#111",
-    textDecoration: active ? "underline" : "none", textUnderlineOffset: 3, textTransform: "uppercase",
+    fontFamily: FONT, fontWeight: 400, fontSize: 13,
+    letterSpacing: "0.14em", color: "#111",
+    textDecoration: active ? "underline" : "none",
+    textUnderlineOffset: 3, textTransform: "uppercase",
   }),
+
   card: {
     position: "absolute", left: 0, top: 0,
-    backgroundColor: "#fff", borderRadius: 2, boxShadow: "2px 3px 4px rgba(0,0,0,0.1)",
-    pointerEvents: "auto", userSelect: "none", willChange: "transform", zIndex: 10, transformOrigin: "top left",
+    backgroundColor: "#fff", borderRadius: 2,
+    boxShadow: "2px 3px 4px rgba(0,0,0,0.1)",
+    pointerEvents: "auto", userSelect: "none",
+    willChange: "transform", zIndex: 10, transformOrigin: "top left",
   } as React.CSSProperties,
+
   badge: {
-    position: "absolute", top: -14, right: -14, width: 32, height: 32, borderRadius: "50%",
-    background: "#3B72C8", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
-    fontSize: "14px", fontWeight: "bold", zIndex: 20, fontFamily: SANS, boxShadow: "0 2px 6px rgba(59,114,200,0.3)",
+    position: "absolute", top: -14, right: -14,
+    width: 32, height: 32, borderRadius: "50%",
+    background: "#3B72C8", color: "#fff",
+    display: "flex", alignItems: "center", justifyContent: "center",
+    fontSize: "14px", fontWeight: "bold",
+    zIndex: 20, fontFamily: SANS,
+    boxShadow: "0 2px 6px rgba(59,114,200,0.3)",
   } as React.CSSProperties,
+
   placeholder: {
     display: "flex", alignItems: "center", justifyContent: "center",
-    height: "100%", fontFamily: FONT, fontSize: 10, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.1em",
+    height: "100%", fontFamily: FONT, fontSize: 10,
+    color: "#aaa", textTransform: "uppercase", letterSpacing: "0.1em",
   } as React.CSSProperties,
+
   hoverLabel: {
-    position: "fixed", bottom: 40, left: "50%", transform: "translateX(-50%)",
-    background: "#fff", border: "1px solid #e0e0e0", borderRadius: 2, padding: "10px 20px",
+    position: "fixed", bottom: 40, left: "50%",
+    transform: "translateX(-50%)", background: "#fff",
+    border: "1px solid #e0e0e0", borderRadius: 2, padding: "10px 20px",
     fontFamily: FONT, fontSize: 13, color: "#111", zIndex: 300,
-    boxShadow: "0 4px 20px rgba(0,0,0,0.1)", whiteSpace: "nowrap", pointerEvents: "none",
+    boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+    whiteSpace: "nowrap", pointerEvents: "none",
   } as React.CSSProperties,
 };
 
+/* ─────────────────────────────────────────────────────────────────────────
+   COMPONENT
+───────────────────────────────────────────────────────────────────────── */
 export default function Playground() {
   const [hoveredLabel, setHoveredLabel] = useState<string | null>(null);
-  const bgRef    = useRef<HTMLDivElement>(null);
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
+  const bgRef     = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const cardRefs  = useRef<(HTMLDivElement | null)[]>([]);
+
+  // World-space pan — targetOffset is where we want to be,
+  // panOffset is the smoothed value actually rendered.
   const panOffset    = useRef({ x: 0, y: 0 });
   const targetOffset = useRef({ x: 0, y: 0 });
-  const reqRef       = useRef<number>(0);
+  const rafRef       = useRef<number>(0);
 
-  const [scale, setScale] = useState(1);
+  // Scale (0.6 on mobile, 1 on desktop). Stored in ref so closures always read current.
   const scaleRef = useRef(1);
-  useEffect(() => { scaleRef.current = scale; }, [scale]);
+  const [, forceScale] = useState(1); // only used to trigger a render on resize
 
   useEffect(() => {
-    const handleResize = () => {
+    const sync = () => {
       const s = window.innerWidth < 640 ? 0.6 : 1;
-      setScale(s);
       scaleRef.current = s;
+      forceScale(s);
     };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    sync();
+    window.addEventListener("resize", sync);
+    return () => window.removeEventListener("resize", sync);
   }, []);
 
+  // Pre-compute base (world-space) position for each card — never changes.
   const basePositions = useRef(
     CARDS.map((card, i) => ({
-      x: (i % LAYOUT.COLS) * LAYOUT.CELL_W + (LAYOUT.CELL_W - LAYOUT.MAX_CARD_W) / 2 + (card.x ?? 0),
-      y: Math.floor(i / LAYOUT.COLS) * LAYOUT.CELL_H + (LAYOUT.CELL_H - LAYOUT.MAX_CARD_H) / 2 + (card.y ?? 0),
+      x: (i % COLS) * CELL_W + (CELL_W - MAX_CARD_W) / 2 + (card.x ?? 0),
+      y: Math.floor(i / COLS) * CELL_H + (CELL_H - MAX_CARD_H) / 2 + (card.y ?? 0),
     }))
   );
 
+  // Write every card's transform directly to DOM — no React state involved.
   const renderPositions = useCallback(() => {
     const s = scaleRef.current;
+    const px = panOffset.current.x;
+    const py = panOffset.current.y;
+
     if (bgRef.current) {
       bgRef.current.style.transform =
-        `translate3d(${(panOffset.current.x * s) % 18}px, ${(panOffset.current.y * s) % 18}px, 0)`;
+        `translate3d(${(px * s) % 18}px, ${(py * s) % 18}px, 0)`;
     }
-    cardRefs.current.forEach((ref, i) => {
-      if (!ref) return;
-      const base = basePositions.current[i];
-      const x  = base.x + panOffset.current.x;
-      const y  = base.y + panOffset.current.y;
-      const rx = (((x + LAYOUT.WRAP_BUFFER) % WORLD_W) + WORLD_W) % WORLD_W - LAYOUT.WRAP_BUFFER;
-      const ry = (((y + LAYOUT.WRAP_BUFFER) % WORLD_H) + WORLD_H) % WORLD_H - LAYOUT.WRAP_BUFFER;
-      ref.style.transform = `translate3d(${rx * s}px, ${ry * s}px, 0) scale(${s})`;
+
+    cardRefs.current.forEach((el, i) => {
+      if (!el) return;
+      const b  = basePositions.current[i];
+      const rx = (((b.x + px + WRAP_BUFFER) % WORLD_W) + WORLD_W) % WORLD_W - WRAP_BUFFER;
+      const ry = (((b.y + py + WRAP_BUFFER) % WORLD_H) + WORLD_H) % WORLD_H - WRAP_BUFFER;
+      el.style.transform = `translate3d(${rx * s}px, ${ry * s}px, 0) scale(${s})`;
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ── Animation loop ────────────────────────────────────────────────────────
-  const isTouchActive = useRef(false);
+  // ── RAF loop ───────────────────────────────────────────────────────────────
+  // Touch snaps instantly (no lerp); mouse/wheel uses lerp for smoothness.
+  const isTouching = useRef(false);
 
   useEffect(() => {
-    const loop = () => {
-      if (isTouchActive.current) {
-        // Touch: snap directly — no lerp, glued to finger
+    const tick = () => {
+      if (isTouching.current) {
         panOffset.current.x = targetOffset.current.x;
         panOffset.current.y = targetOffset.current.y;
       } else {
-        const lerp = 0.18;
-        panOffset.current.x += (targetOffset.current.x - panOffset.current.x) * lerp;
-        panOffset.current.y += (targetOffset.current.y - panOffset.current.y) * lerp;
+        const L = 0.18;
+        panOffset.current.x += (targetOffset.current.x - panOffset.current.x) * L;
+        panOffset.current.y += (targetOffset.current.y - panOffset.current.y) * L;
       }
       renderPositions();
-      reqRef.current = requestAnimationFrame(loop);
+      rafRef.current = requestAnimationFrame(tick);
     };
-    reqRef.current = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(reqRef.current);
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
   }, [renderPositions]);
 
-  // ── Wheel pan ─────────────────────────────────────────────────────────────
+  // ── Wheel / trackpad ───────────────────────────────────────────────────────
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
       targetOffset.current.x -= e.deltaX;
@@ -182,10 +229,11 @@ export default function Playground() {
   }, []);
 
   // ── Mouse drag ────────────────────────────────────────────────────────────
-  const startMouseDrag = useCallback((e: React.MouseEvent) => {
+  const onMouseDown = useCallback((e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest("nav")) return;
     const sx = e.clientX, sy = e.clientY;
     const ox = targetOffset.current.x, oy = targetOffset.current.y;
+
     const onMove = (ev: MouseEvent) => {
       targetOffset.current.x = ox + (ev.clientX - sx) / scaleRef.current;
       targetOffset.current.y = oy + (ev.clientY - sy) / scaleRef.current;
@@ -198,32 +246,56 @@ export default function Playground() {
     window.addEventListener("mouseup", onUp);
   }, []);
 
-  // ── Touch drag via React synthetic events ─────────────────────────────────
-  // React registers synthetic touch handlers at the root during initial render,
-  // BEFORE Safari's gesture recognizer runs — this is why it works on iOS
-  // when imperative addEventListener (added in useEffect) does not.
-  const touchStart = useRef({ x: 0, y: 0, ox: 0, oy: 0 });
+  // ── Touch drag ────────────────────────────────────────────────────────────
+  // Attached imperatively on the canvas element (not window, not React synthetic)
+  // with passive:false on BOTH touchstart and touchmove.
+  //
+  // Why this works on iOS Safari / Vercel when other approaches don't:
+  //   - React synthetic onTouchMove fires through the React root delegate,
+  //     which is registered with passive:true in React 18 — so preventDefault()
+  //     is silently ignored, and Safari rubber-bands.
+  //   - window-level listeners lose the race against Safari's gesture engine.
+  //   - Element-level listeners with passive:false, registered in useEffect
+  //     (synchronously after mount, before any user gesture), fire BEFORE
+  //     Safari commits the scroll direction — so preventDefault() is honoured.
+  //
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if ((e.target as HTMLElement).closest("nav")) return;
-    const t = e.touches[0];
-    touchStart.current = {
-      x: t.clientX, y: t.clientY,
-      ox: targetOffset.current.x, oy: targetOffset.current.y,
+    let sx = 0, sy = 0, ox = 0, oy = 0;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if ((e.target as HTMLElement).closest("nav")) return;
+      e.preventDefault(); // block Safari scroll/zoom from the first frame
+      sx = e.touches[0].clientX;
+      sy = e.touches[0].clientY;
+      ox = targetOffset.current.x;
+      oy = targetOffset.current.y;
+      isTouching.current = true;
     };
-    isTouchActive.current = true;
-  }, []);
 
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!isTouchActive.current) return;
-    const t = e.touches[0];
-    const s = scaleRef.current;
-    targetOffset.current.x = touchStart.current.ox + (t.clientX - touchStart.current.x) / s;
-    targetOffset.current.y = touchStart.current.oy + (t.clientY - touchStart.current.y) / s;
-  }, []);
+    const onTouchMove = (e: TouchEvent) => {
+      if (!isTouching.current) return;
+      e.preventDefault(); // keep blocking every frame
+      const s = scaleRef.current;
+      targetOffset.current.x = ox + (e.touches[0].clientX - sx) / s;
+      targetOffset.current.y = oy + (e.touches[0].clientY - sy) / s;
+    };
 
-  const handleTouchEnd = useCallback(() => {
-    isTouchActive.current = false;
+    const onTouchEnd = () => { isTouching.current = false; };
+
+    canvas.addEventListener("touchstart", onTouchStart, { passive: false });
+    canvas.addEventListener("touchmove",  onTouchMove,  { passive: false });
+    canvas.addEventListener("touchend",   onTouchEnd,   { passive: true  });
+    canvas.addEventListener("touchcancel",onTouchEnd,   { passive: true  });
+
+    return () => {
+      canvas.removeEventListener("touchstart",  onTouchStart);
+      canvas.removeEventListener("touchmove",   onTouchMove);
+      canvas.removeEventListener("touchend",    onTouchEnd);
+      canvas.removeEventListener("touchcancel", onTouchEnd);
+    };
   }, []);
 
   const NAV_LINKS = [
@@ -237,20 +309,24 @@ export default function Playground() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        /* Prevent the page itself from scrolling or rubber-banding on any OS */
         html, body {
           width: 100%; height: 100%;
           overflow: hidden;
           overscroll-behavior: none;
           background: #fff;
+          /* iOS Safari: disable momentum scroll on the document */
+          -webkit-overflow-scrolling: auto;
         }
+
         .canvas {
           width: 100vw; height: 100vh;
           position: relative; overflow: hidden;
           cursor: grab;
-          /* touch-action: none tells Safari to hand ALL touch gestures to JS */
-          touch-action: none;
         }
         .canvas:active { cursor: grabbing; }
+
         @media (max-width: 640px) {
           .nav-logo  { font-size: 12px !important; }
           .nav-links { gap: 16px !important; }
@@ -258,22 +334,27 @@ export default function Playground() {
         }
       `}</style>
 
+      {/*
+        touch-action: none as an inline style guarantees it is applied
+        synchronously on first paint — before any gesture can be detected.
+        A class-based rule (in a <style> tag) can be applied after the browser
+        has already snapshotted the element's touch behaviour on iOS.
+      */}
       <div
+        ref={canvasRef}
         className="canvas"
-        onMouseDown={startMouseDrag}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
+        style={{ touchAction: "none" }}
+        onMouseDown={onMouseDown}
       >
-        <div ref={bgRef} style={styles.dotGrid} />
-        <div style={styles.accentRed} />
-        <div style={styles.accentBlue} />
+        <div ref={bgRef} style={S.dotGrid} />
+        <div style={S.accentRed} />
+        <div style={S.accentBlue} />
 
-        <nav style={styles.nav}>
-          <Link href="/" style={styles.logo} className="nav-logo">KRIS</Link>
+        <nav style={S.nav}>
+          <Link href="/" style={S.logo} className="nav-logo">KRIS</Link>
           <div style={{ display: "flex", gap: 40 }} className="nav-links">
-            {NAV_LINKS.map((item) => (
-              <Link key={item.label} href={item.href} style={styles.navLink(false)} className="nav-link">
+            {NAV_LINKS.map(item => (
+              <Link key={item.label} href={item.href} style={S.navLink(false)} className="nav-link">
                 {item.label}
               </Link>
             ))}
@@ -284,24 +365,26 @@ export default function Playground() {
           {CARDS.map((card, i) => (
             <div
               key={card.id}
-              ref={(el) => { cardRefs.current[i] = el; }}
+              ref={el => { cardRefs.current[i] = el; }}
               onMouseEnter={() => setHoveredLabel(`${card.id} · ${card.label} · ${card.cat}`)}
               onMouseLeave={() => setHoveredLabel(null)}
-              style={{ ...styles.card, width: card.w, height: card.h }}
+              style={{ ...S.card, width: card.w, height: card.h }}
             >
-              <div style={styles.badge}>{card.id}</div>
-              <div style={{ width: "100%", height: "100%", position: "relative", overflow: "hidden", background: "#ebebea" }}>
-                {card.img ? (
-                  <Image src={card.img} alt={card.label} fill style={{ objectFit: "cover" }} draggable={false} />
-                ) : (
-                  <div style={styles.placeholder}>{card.cat}</div>
-                )}
+              <div style={S.badge}>{card.id}</div>
+              <div style={{
+                width: "100%", height: "100%",
+                position: "relative", overflow: "hidden", background: "#ebebea",
+              }}>
+                {card.img
+                  ? <Image src={card.img} alt={card.label} fill style={{ objectFit: "cover" }} draggable={false} />
+                  : <div style={S.placeholder}>{card.cat}</div>
+                }
               </div>
             </div>
           ))}
         </div>
 
-        {hoveredLabel && <div style={styles.hoverLabel}>{hoveredLabel}</div>}
+        {hoveredLabel && <div style={S.hoverLabel}>{hoveredLabel}</div>}
       </div>
     </>
   );
