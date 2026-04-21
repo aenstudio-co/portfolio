@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Kryzrl",
-  description: "A Design Portfolio.",
+  title: "Kris, Designer",
+  description: "An interdisciplinary artist based in the Philippines.",
 };
 
 export default function RootLayout({
