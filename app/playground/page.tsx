@@ -70,7 +70,7 @@ const WORLD_H = LAYOUT.ROWS * LAYOUT.CELL_H;
 /* ─────────────────────────────────────────────────────────────────────────
    STYLES
 ───────────────────────────────────────────────────────────────────────── */
-const FONT = "'Courier Prime', 'Courier New', monospace";
+const FONT = "'Consolas', 'Courier New', monospace";
 const SANS = "Arial, Helvetica, sans-serif";
 
 const styles = {
