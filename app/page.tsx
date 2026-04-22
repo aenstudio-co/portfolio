@@ -17,23 +17,23 @@ interface Note {
 }
 
 // ─── Static data ──────────────────────────────────────────────────────────────
-const FONT  = "'Courier Prime', 'Courier New', monospace";
+const FONT  = "Consolas, 'Courier New', monospace";
 const CFONT = "Consolas, 'Courier New', monospace";
 
 const USER_CARD_COLORS = ["#FFA0BB", "#C9E6EF", "#F1DD77", "#F7F6EF"];
 
 const DESKTOP_POSITIONS = [
-  { id: "intro",     xPct: 30, yPct: 25, color: "#43669e", width: 235, zIndex: 4 },
-  { id: "quote",     xPct: 50, yPct: 20, color: "#2f812f", width: 320, zIndex: 6 },
-  { id: "education", xPct: 44, yPct: 33, color: "#c06408", width: 250, zIndex: 8 },
-  { id: "red",       xPct: 50, yPct: 45, color: "#b02415", width: 200, zIndex: 5 },
+  { id: "intro",     xPct: 30, yPct: 25, color: "#43669e", width: 250, zIndex: 7 },
+  { id: "quote",     xPct: 51, yPct: 17, color: "#2f812f", width: 300, zIndex: 6 },
+  { id: "education", xPct: 44, yPct: 30, color: "#c06408", width: 280, zIndex: 8 },
+  { id: "red",       xPct: 53, yPct: 45, color: "#b02415", width: 200, zIndex: 5 },
 ];
 
 const MOBILE_POSITIONS = [
-  { id: "intro",     xPct: 12, yPct: 28, color: "#43669e", width: 250, zIndex: 4 },
-  { id: "quote",     xPct: 26, yPct: 17, color: "#2f812f", width: 275, zIndex: 6 },
-  { id: "education", xPct: 38, yPct: 48, color: "#c06408", width: 225, zIndex: 8 },
-  { id: "red",       xPct: 20, yPct: 57, color: "#b02415", width: 200, zIndex: 5 },
+  { id: "intro",     xPct: 12, yPct: 17, color: "#43669e", width: 250, zIndex: 7 },
+  { id: "quote",     xPct: 20, yPct: 10, color: "#2f812f", width: 300, zIndex: 6 },
+  { id: "education", xPct: 45, yPct: 37, color: "#c06408", width: 200, zIndex: 8 },
+  { id: "red",       xPct: 10, yPct: 47, color: "#b02415", width: 225, zIndex: 5 },
 ];
 
 const PROJECTS: {
@@ -93,10 +93,10 @@ const bodyStyle: React.CSSProperties = {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function cardSizeFromText(t: string) {
   const l = t.length;
-  if (l <= 30) return { width: 160, minHeight: 160 };
-  if (l <= 60) return { width: 190, minHeight: 190 };
-  if (l <= 80) return { width: 210, minHeight: 210 };
-  return { width: 230, minHeight: 230 };
+  if (l <= 30) return { width: 200, minHeight: 200 };
+  if (l <= 60) return { width: 230, minHeight: 230 };
+  if (l <= 80) return { width: 260, minHeight: 260 };
+  return { width: 280, minHeight: 280 };
 }
 
 function randomSpawnPosition(isMobile: boolean) {
@@ -270,7 +270,7 @@ function DraggableNote({
         minHeight: note.minHeight ?? (note.id === "red" ? 200 : undefined),
         backgroundColor: note.color,
         borderRadius: 2,
-        padding: "22px 20px 28px",
+        padding: "28px 26px 34px",
         cursor: "grab",
         userSelect: "none",
         boxShadow: "3px 5px 16px rgba(0,0,0,0.22)",
@@ -565,14 +565,15 @@ function ProjectsSection({
   );
 }
 
-// ─── ExploreButton ────────────────────────────────────────────────────────────
-function ExploreButton({
-  deletedCount, onRestoreCards, onAddCard, onRestart,
+// ─── NoteControls ─────────────────────────────────────────────────────────────
+function NoteControls({
+  deletedCount, onRestoreCards, onAddCard, onRestart, isMobile,
 }: {
   deletedCount: number;
   onRestoreCards: () => void;
   onAddCard: (text: string) => void;
   onRestart: () => void;
+  isMobile: boolean;
 }) {
   const [open,    setOpen]    = useState(false);
   const [addMode, setAddMode] = useState(false);
@@ -587,50 +588,29 @@ function ExploreButton({
     const trimmed = text.trim();
     if (!trimmed) return;
     onAddCard(trimmed);
-    setText(""); setAddMode(false); setOpen(false);
+    setText(""); setAddMode(false); if (isMobile) setOpen(false);
   };
 
   const rowBtn: React.CSSProperties = {
     display: "flex", alignItems: "center", gap: 10,
     width: "100%", padding: "8px 16px",
     background: "none", border: "none", cursor: "pointer",
-    fontFamily: FONT, fontSize: 12,
+    fontFamily: CFONT, fontSize: 12,
     letterSpacing: "0.10em", textTransform: "uppercase",
     color: "#111", textAlign: "left",
+    transition: "background 0.15s",
   };
 
-  return (
-    <div
-      className="explore-btn"
-      style={{ position: "fixed", top: 60, right: 20, zIndex: 600, paddingTop: 8 }}
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => { setOpen(false); setAddMode(false); }}
-    >
-      <button style={{
-        width: 36, height: 36, borderRadius: "50%",
-        background: open ? "#3B72C8" : "#fff",
-        border: open ? "1px solid #3B72C8" : "1px solid #e0e0e0",
-        boxShadow: "2px 3px 8px rgba(0,0,0,0.12)",
-        fontFamily: FONT, fontSize: 16, fontWeight: 700,
-        color: open ? "#fff" : "#111", cursor: "default",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        transition: "background 0.18s, color 0.18s, border-color 0.18s",
-        position: "relative", zIndex: 602,
-      }} title="Explore">!</button>
-
-      <div style={{
-        position: "absolute", top: 44, right: 0,
-        background: "#fff", border: "1px solid #e0e0e0",
-        borderRadius: 2, padding: "8px 0", minWidth: 168,
-        boxShadow: "2px 3px 10px rgba(0,0,0,0.12)",
-        opacity: open ? 1 : 0,
-        pointerEvents: open ? "auto" : "none",
-        transform: open ? "translateY(0)" : "translateY(-6px)",
-        transition: "opacity 0.16s ease, transform 0.16s ease",
-        zIndex: 601,
-      }}>
+  const menuRows = (
+    <div style={{
+      display: "flex", flexDirection: "column",
+      background: "#fff", border: "1px solid #e0e0e0",
+      borderRadius: 2, boxShadow: "2px 3px 8px rgba(0,0,0,0.12)",
+      overflow: "hidden", minWidth: 168,
+    }}>
+        {/* Restore */}
         <button
-          onClick={() => { if (!deletedCount) return; setOpen(false); onRestoreCards(); }}
+          onClick={() => { if (!deletedCount) return; onRestoreCards(); }}
           style={{ ...rowBtn, cursor: deletedCount > 0 ? "pointer" : "default", color: deletedCount > 0 ? "#111" : "#ccc" }}
           onMouseEnter={e => { if (deletedCount > 0) (e.currentTarget as HTMLElement).style.background = "#f3f3f1"; }}
           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
@@ -646,7 +626,10 @@ function ExploreButton({
             }}>{deletedCount}</span>
           )}
         </button>
-        <div style={{ height: 1, background: "#ebebea", margin: "4px 0" }} />
+
+        <div style={{ height: 1, background: "#ebebea" }} />
+
+        {/* Add a Card */}
         {!addMode ? (
           <button
             onClick={() => setAddMode(true)}
@@ -670,23 +653,23 @@ function ExploreButton({
               rows={3}
               style={{
                 width: "100%", resize: "none",
-                fontFamily: FONT, fontSize: 12, color: "#111",
+                fontFamily: CFONT, fontSize: 12, color: "#111",
                 border: "1px solid #ddd", borderRadius: 2,
                 padding: "6px 8px", outline: "none", lineHeight: 1.6,
               }}
             />
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 6 }}>
-              <span style={{ fontFamily: FONT, fontSize: 10, color: "#aaa" }}>{text.length}/100</span>
+              <span style={{ fontFamily: CFONT, fontSize: 10, color: "#aaa" }}>{text.length}/100</span>
               <div style={{ display: "flex", gap: 6 }}>
                 <button
                   onClick={() => { setAddMode(false); setText(""); }}
-                  style={{ fontFamily: FONT, fontSize: 11, color: "#999", background: "none", border: "none", cursor: "pointer", textTransform: "uppercase" }}
+                  style={{ fontFamily: CFONT, fontSize: 11, color: "#999", background: "none", border: "none", cursor: "pointer", textTransform: "uppercase" }}
                 >Cancel</button>
                 <button
                   onClick={handleAdd}
                   disabled={!text.trim()}
                   style={{
-                    fontFamily: FONT, fontSize: 11,
+                    fontFamily: CFONT, fontSize: 11,
                     background: "#3B72C8", color: "#fff",
                     border: "none", borderRadius: 2, padding: "4px 10px",
                     cursor: text.trim() ? "pointer" : "default",
@@ -698,16 +681,63 @@ function ExploreButton({
             </div>
           </div>
         )}
-        <div style={{ height: 1, background: "#ebebea", margin: "4px 0" }} />
+
+        <div style={{ height: 1, background: "#ebebea" }} />
+
+        {/* Reset */}
         <button
-          onClick={() => { setOpen(false); setAddMode(false); onRestart(); }}
+          onClick={onRestart}
           style={rowBtn}
           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#f3f3f1"; }}
           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
         >
-          <span style={{ fontSize: 12 }}>⟳</span>Restart
+          <span style={{ fontSize: 12 }}>⟳</span>Reset
         </button>
       </div>
+  );
+
+  if (isMobile) {
+    return (
+      <div
+        className="explore-btn"
+        style={{ position: "fixed", top: 60, right: 20, zIndex: 600, paddingTop: 8 }}
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => { setOpen(false); setAddMode(false); }}
+      >
+        <button
+          onClick={() => setOpen(o => !o)}
+          style={{
+            width: 36, height: 36, borderRadius: "50%",
+            background: open ? "#3B72C8" : "#fff",
+            border: open ? "1px solid #3B72C8" : "1px solid #e0e0e0",
+            boxShadow: "2px 3px 8px rgba(0,0,0,0.12)",
+            fontFamily: CFONT, fontSize: 16, fontWeight: 700,
+            color: open ? "#fff" : "#111", cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            transition: "background 0.18s, color 0.18s, border-color 0.18s",
+            position: "relative", zIndex: 602,
+          }}
+        >?</button>
+        <div style={{
+          position: "absolute", top: 44, right: 0,
+          opacity: open ? 1 : 0,
+          pointerEvents: open ? "auto" : "none",
+          transform: open ? "translateY(0)" : "translateY(-6px)",
+          transition: "opacity 0.16s ease, transform 0.16s ease",
+          zIndex: 601,
+        }}>
+          {menuRows}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="explore-btn"
+      style={{ position: "fixed", top: 60, right: 20, zIndex: 600, paddingTop: 8 }}
+    >
+      {menuRows}
     </div>
   );
 }
@@ -1016,11 +1046,12 @@ export default function Home() {
         pointerEvents: showProjects ? "none" : "auto",
         transition: "opacity 0.3s ease",
       }}>
-        <ExploreButton
+        <NoteControls
           deletedCount={deletedNotes.length}
           onRestoreCards={restoreCards}
           onAddCard={addCard}
           onRestart={handleRestart}
+          isMobile={isMobile}
         />
       </div>
     </>
