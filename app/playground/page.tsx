@@ -21,9 +21,9 @@ interface CardDef {
 const CARDS: CardDef[] = [
   { id:  1, label: "Presentation",      cat: "Creatives Committee Onboarding Session", w: 360, h: 202, x: -100, y:  -50, img: "/work/img-16.webp" },
   { id:  2, label: "Publicity Material", cat: "Battle of the Wits",    w: 260, h: 260, x:   0, y:   25, img: "/work/img-19.webp" },
-  { id:  3, label: "Publicity Material", cat: "Sirkits Merch Release", w: 260, h: 260, x:   0, y:  -25, img: undefined },
+  { id:  3, label: "Publicity Material", cat: "Sirkits Merch Release", w: 327, h: 232, x:   -35, y:  -25, img: "/work/img-6.webp" },
   { id:  4, label: "Publicity Material", cat: "Bytecamp 3.0",          w: 270, h: 337, x:   0, y:    0, img: "/work/img-15.webp" },
-  { id:  5, label: "Project 05",        cat: "Motion  ", w: 228, h: 192, x: 0, y: 0, img: undefined },
+  { id:  5, label: "Project 05",        cat: "Motion  ", w: 257, h: 207, x: 0, y: 0, img: "/work/img-12.webp" },
   { id:  6, label: "Project 06",        cat: "Product ", w: 225, h: 325, x: -30, y: -75, img: "/work/img-9.webp" },
   { id:  7, label: "Illustration",      cat: "Clip Studio Paint", w: 360, h: 277, x: -80, y: -85, img: "/work/img-2.webp" },
   { id:  8, label: "Project 08",        cat: "Branding", w: 240, h: 252, x: 0, y: 0, img: undefined },
@@ -47,8 +47,8 @@ const CARDS: CardDef[] = [
   { id: 26, label: "Project 26",        cat: "Product ", w: 227, h: 300, x: -25, y: 0, img: "/work/img-21.webp" },
   { id: 27, label: "Project 27",        cat: "Poster  ", w: 360, h: 227, x: -100, y: 0, img: "/work/img-3.webp" },
   { id: 28, label: "Project 28",        cat: "Branding", w: 317, h: 355, x: -20, y: -85, img: "/work/img-13.webp" },
-  { id: 29, label: "Project 29",        cat: "UI      ", w: 192, h: 264, x: 0, y: 0, img: undefined },
-  { id: 30, label: "Project 30",        cat: "Motion  ", w: 228, h: 192, x: 0, y: 0, img: undefined },
+  { id: 29, label: "Project 29",        cat: "UI      ", w: 200, h: 264, x: 0, y: 0, img: "/work/img-18.webp" },
+  { id: 30, label: "Project 30",        cat: "Motion  ", w: 325, h: 229, x: -100, y: -25, img: "/work/img-5.webp" },
 ];
 
 /* ─────────────────────────────────────────────────────────────────────────
